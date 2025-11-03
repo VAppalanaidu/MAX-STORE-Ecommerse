@@ -1,0 +1,1181 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAX STORE - Seller Dashboard</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f5f7fa;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+
+    /* Sidebar */
+    .sidebar {
+      height: 100vh;
+      background: #172337;
+      color: white;
+      padding-top: 20px;
+      position: fixed;
+      width: 240px;
+    }
+    .sidebar .nav-link {
+      color: #b0b3b8;
+      font-weight: 500;
+      padding: 12px 20px;
+      display: flex;
+      align-items: center;
+      transition: all 0.3s ease;
+    }
+    .sidebar .nav-link i {
+      margin-right: 10px;
+      font-size: 18px;
+    }
+    .sidebar .nav-link:hover, .sidebar .nav-link.active {
+      background-color: #2874f0;
+      color: #fff;
+      border-radius: 8px;
+    }
+
+    /* Navbar */
+    .navbar {
+      background: white;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.05);
+      padding: 10px 25px;
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+    }
+
+    /* Main content */
+    .main-content {
+      margin-left: 240px;
+      padding: 25px;
+    }
+
+    /* Enhanced Summary Cards for Dashboard */
+    .dashboard-card {
+      border: none;
+      border-radius: 20px;
+      padding: 25px;
+      color: white;
+      transition: all 0.3s ease;
+      position: relative;
+      overflow: hidden;
+      min-height: 140px;
+    }
+    .dashboard-card::before {
+      content: '';
+      position: absolute;
+      top: -50%;
+      right: -50%;
+      width: 100%;
+      height: 100%;
+      background: rgba(255,255,255,0.1);
+      transform: rotate(30deg);
+      transition: all 0.3s ease;
+    }
+    .dashboard-card:hover::before {
+      transform: rotate(45deg) scale(1.2);
+    }
+    .dashboard-card:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 15px 30px rgba(0,0,0,0.2);
+    }
+    .dashboard-card .card-icon {
+      font-size: 2.5rem;
+      opacity: 0.8;
+      margin-bottom: 15px;
+    }
+    .dashboard-card .card-value {
+      font-size: 2rem;
+      font-weight: 700;
+      margin-bottom: 5px;
+    }
+    .dashboard-card .card-label {
+      font-size: 0.9rem;
+      opacity: 0.9;
+      font-weight: 500;
+    }
+    .dashboard-card .card-trend {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      font-size: 0.8rem;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      background: rgba(255,255,255,0.2);
+    }
+
+    /* Sales Card */
+    .sales-card {
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    }
+
+    /* Orders Card */
+    .orders-card {
+      background: linear-gradient(135deg, #f093fb 0%, #f5576c 100%);
+    }
+
+    /* Products Card */
+    .products-card {
+      background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    }
+
+    /* Revenue Card */
+    .revenue-card {
+      background: linear-gradient(135deg, #43e97b 0%, #38f9d7 100%);
+    }
+
+    /* Product Cards */
+    .product-card {
+      transition: transform 0.3s, box-shadow 0.3s;
+      border-radius: 12px;
+      overflow: hidden;
+      border: none;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    .product-card:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
+    }
+
+    .card-img-container {
+      background-color: #f8f9fa;
+      border-radius: 12px;
+    }
+
+    .product-card img {
+      height: 180px;
+      object-fit: contain;
+      padding: 10px;
+    }
+
+    .card-body h6 {
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    footer {
+      text-align: center;
+      padding: 20px;
+      margin-top: 40px;
+      color: #6c757d;
+    }
+
+    /* Form Container (used for Add/Update Product/Category) */
+    .form-container {
+      background: #fff;
+      padding: 40px 50px;
+      border-radius: 15px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      max-width: 700px;
+      margin: 40px auto;
+    }
+    .form-title {
+      text-align: center;
+      color: #2874f0;
+      font-weight: 600;
+      margin-bottom: 30px;
+    }
+    .btn-submit {
+      background-color: #2874f0;
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      transition: background-color 0.3s ease;
+    }
+    
+    .btn-submit:hover {
+      background-color: #185ad2;
+    }
+
+    /* Make inputs cleaner */
+    .form-control, .form-select, textarea {
+      border-radius: 10px;
+      box-shadow: none;
+      border: 1px solid #d9d9d9;
+      padding: 10px 15px;
+      transition: border-color 0.3s ease;
+    }
+    .form-control:focus, .form-select:focus, textarea:focus {
+      border-color: #2874f0;
+      box-shadow: 0 0 0 0.2rem rgba(40, 116, 240, 0.15);
+    }
+    
+    /* Style for Update Product Image Preview/Existing Image Display */
+    .image-preview {
+      margin-top: 15px;
+      text-align: center;
+      padding: 10px;
+      border: 1px solid #e9ecef;
+      border-radius: 10px;
+    }
+
+    .image-preview img {
+      border-radius: 8px;
+      width: 150px;
+      height: 150px;
+      object-fit: contain;
+    }
+    
+    .product-details-display p {
+        margin-bottom: 5px;
+    }
+
+    /* Profile Card Styling */
+    .profile-card {
+        max-width: 700px;
+        margin: 40px auto;
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+        padding: 30px;
+        background-color: #fff;
+    }
+    .profile-header {
+        text-align: center;
+        margin-bottom: 30px;
+    }
+    .profile-avatar {
+        width: 100px;
+        height: 100px;
+        border-radius: 50%;
+        object-fit: cover;
+        margin-bottom: 10px;
+        border: 3px solid #2874f0;
+    }
+    .detail-row {
+        padding: 10px 0;
+        border-bottom: 1px dashed #eee;
+    }
+    .detail-row:last-child {
+        border-bottom: none;
+    }
+    .detail-label {
+        font-weight: 600;
+        color: #6c757d;
+    }
+    .detail-value {
+        color: #343a40;
+    }
+    
+    .profile-avatar {
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    object-fit: cover;
+    box-shadow: 0 0 8px rgba(0, 0, 0, 0.1);
+    border: 2px solid #e0e0e0;
+}
+    
+    /* Hide Edit Form/Show View Mode */
+    .edit-mode { display: none; }
+    .view-mode { display: block; }
+    
+    /* Order View Styling */
+    .order-view-container {
+        max-width: 1000px;
+        margin: 0 auto;
+    }
+    .order-header-card {
+        background: linear-gradient(135deg, #2874f0, #185ad2);
+        color: white;
+        border-radius: 15px;
+        padding: 25px;
+        margin-bottom: 25px;
+        box-shadow: 0 6px 15px rgba(40, 116, 240, 0.2);
+    }
+    .order-details-card, .customer-details-card, .product-details-card {
+        border: none;
+        border-radius: 15px;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+        margin-bottom: 25px;
+        overflow: hidden;
+    }
+    .order-details-card .card-header, 
+    .customer-details-card .card-header, 
+    .product-details-card .card-header {
+        background-color: #f8f9fa;
+        border-bottom: 1px solid #e9ecef;
+        padding: 15px 20px;
+        font-weight: 600;
+        color: #2874f0;
+    }
+    .order-status-badge {
+        font-size: 0.9rem;
+        padding: 8px 15px;
+        border-radius: 20px;
+    }
+    .product-image-container {
+        background-color: #f8f9fa;
+        border-radius: 10px;
+        padding: 15px;
+        text-align: center;
+        height: 200px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    .product-image-container img {
+        max-height: 170px;
+        object-fit: contain;
+    }
+    .detail-item {
+        margin-bottom: 12px;
+        padding-bottom: 12px;
+        border-bottom: 1px dashed #eee;
+    }
+    .detail-item:last-child {
+        border-bottom: none;
+        margin-bottom: 0;
+        padding-bottom: 0;
+    }
+    .detail-label {
+        font-weight: 600;
+        color: #6c757d;
+        min-width: 140px;
+    }
+    .detail-value {
+        color: #343a40;
+    }
+    .back-btn {
+        background-color: #6c757d;
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 20px;
+        transition: background-color 0.3s ease;
+    }
+    .back-btn:hover {
+        background-color: #5a6268;
+        color: white;
+    }
+
+    /* Recent Products Section */
+    .recent-products-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 25px;
+    }
+    .view-all-btn {
+        background: linear-gradient(135deg, #2874f0, #185ad2);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        padding: 8px 20px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+    }
+    .view-all-btn:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 5px 15px rgba(40, 116, 240, 0.3);
+        color: white;
+    }
+    
+  </style>
+</head>
+
+<body>
+
+  <div class="sidebar d-flex flex-column">
+    <h4 class="text-center text-white fw-bold mb-4">MAX STORE</h4>
+    
+    <a href="/seller/dashboard" class="nav-link" 
+      th:classappend="${msg == 'dashboard'} ? 'active'">
+        <i class="bi bi-speedometer2"></i> Dashboard
+    </a>
+
+    <a href="/seller/allproducts" class="nav-link" 
+      th:classappend="${msg == 'products' || msg == 'updateProduct'} ? 'active'">
+        <i class="bi bi-box-seam"></i> Products
+    </a>
+
+    <a href="/seller/orders" class="nav-link" 
+      th:classappend="${msg == 'orders' || msg == 'orderView'} ? 'active'">
+        <i class="bi bi-cart4"></i> Orders
+    </a>
+
+    <a href="/seller/add" class="nav-link"
+      th:classappend="${msg == 'addProduct'} ? 'active'">
+        <i class="bi bi-plus-square"></i> Add Product
+    </a>
+    
+    <a href="/seller/addCategory" class="nav-link"
+      th:classappend="${msg == 'addCategory'} ? 'active'">
+        <i class="bi bi-folder-plus"></i> Add Category
+    </a>
+
+    <a href="/update/seller" class="nav-link" 
+      th:classappend="${msg == 'profile'} ? 'active'">
+        <i class="bi bi-person-circle"></i> Profile
+    </a>
+
+    <a href="/seller/logout" class="nav-link"><i class="bi bi-box-arrow-right"></i> Logout</a>
+  </div>
+
+
+  <div class="main-content">
+    <nav class="navbar navbar-expand-lg">
+      <div class="container-fluid">
+        <h5 class="fw-semibold text-primary m-0" th:text="${msg.equals('dashboard') ? 'Seller Dashboard' : 
+                                                          msg.equals('addProduct') ? 'Add Product' :
+                                                          msg.equals('addCategory') ? 'Add Category' :
+                                                          msg.equals('products') ? 'All Products' :
+                                                          msg.equals('orders') ? 'Orders' :
+                                                          msg.equals('updateProduct') ? 'Update Product' :
+                                                          msg.equals('profile') ? 'Seller Profile' :
+                                                          msg.equals('orderView') ? 'Order Details' :
+                                                          'MAX STORE'}">Seller Dashboard</h5>
+        <div class="ms-auto d-flex align-items-center">
+          <div class="dropdown">
+            <a class="nav-link dropdown-toggle text-dark fw-semibold" href="#" role="button" data-bs-toggle="dropdown">
+              <i class="bi bi-person-circle me-1"></i>
+              <span th:text="${seller != null ? seller.name : 'Seller'}">Seller</span>
+            </a>
+
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><a class="dropdown-item" href="#">View Profile</a></li>
+              <li><a class="dropdown-item" href="#">Settings</a></li>
+              <li><hr class="dropdown-divider"></li>
+              <li><a class="dropdown-item text-danger" href="/seller/logout">Logout</a></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </nav>
+
+    
+    <div th:if="${msg.equals('dashboard')}">
+      <!-- Enhanced Dashboard Cards -->
+      <div class="row mt-4 g-4">
+        <div class="col-md-3">
+          <div class="dashboard-card sales-card">
+            <div class="card-icon">
+              <i class="bi bi-cash-stack"></i>
+            </div>
+            <div class="card-value" th:text="${totalSales != null ? totalSales : '0'}">₹2,45,000</div>
+            <div class="card-label">Total Sales</div>
+            <div class="card-trend">+12.5%</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="dashboard-card orders-card">
+            <div class="card-icon">
+              <i class="bi bi-cart-check"></i>
+            </div>
+            <div class="card-value" th:text="${totalOrders != null ? totalOrders : '0'}">320</div>
+            <div class="card-label">Total Orders</div>
+            <div class="card-trend">+8.2%</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="dashboard-card products-card">
+            <div class="card-icon">
+              <i class="bi bi-box-seam"></i>
+            </div>
+            <div class="card-value" th:text="${totalProducts}">48</div>
+            <div class="card-label">Active Products</div>
+            <div class="card-trend">+5.1%</div>
+          </div>
+        </div>
+        <div class="col-md-3">
+          <div class="dashboard-card revenue-card">
+            <div class="card-icon">
+              <i class="bi bi-graph-up-arrow"></i>
+            </div>
+            <div class="card-value" th:text="${monthelyRevenue != null ? monthelyRevenue : '0' }" >₹1,89,500</div>
+            <div class="card-label">Monthly Revenue</div>
+            <div class="card-trend">+15.3%</div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Recent Products Section -->
+      <div class="container mt-5">
+        <div class="recent-products-header">
+          <h5 class="text-primary mb-0"><i class="bi bi-box-seam me-2"></i>Recent Products</h5>
+          <a href="/seller/allproducts" class="btn view-all-btn">
+            <i class="bi bi-grid-3x3-gap me-2"></i>View All Products
+          </a>
+        </div>
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-4 col-sm-6" th:each="product : ${products}">
+            <div class="card h-100 border-0 shadow-sm product-card">
+              <div class="card-img-container p-3 text-center">
+                <img th:src="@{'/p_images/' + ${product.imgName}}" th:alt="${product.name}"
+                    class="card-img-top img-fluid" style="height: 180px; object-fit: contain;">
+              </div>
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-2" th:text="${product.name}">Product Name</h6>
+                <p class="text-muted mb-1"><strong>Category:</strong> <span th:text="${product.category.name}"></span></p>
+                <p class="mb-1"><strong>Price:</strong> ₹<span th:text="${product.price}"></span></p>
+                <p class="mb-0">
+                  <strong>Status:</strong> 
+                  <span th:if="${product.available}" class="badge bg-success">In Stock</span>
+                  <span th:unless="${product.available}" class="badge bg-danger">Out of Stock</span>
+                </p>
+              </div>
+            </div>
+          </div>
+
+          <div th:if="${#lists.isEmpty(products)}" class="text-center text-muted mt-5 py-5">
+            <i class="bi bi-inbox display-1 text-light"></i>
+            <h5 class="mt-3">No products available</h5>
+            <p class="text-muted">Start by adding your first product</p>
+            <a href="/seller/add" class="btn btn-primary mt-2">
+              <i class="bi bi-plus-circle me-2"></i>Add Product
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div th:if="${msg.equals('addProduct')}">
+      <div class="form-container">
+        <h3 class="form-title"><i class="bi bi-bag-plus me-2"></i>Add Product Details</h3>
+
+        <form th:action="@{/product/save}" method="post" enctype="multipart/form-data" th:object="${productDTO}">
+          <input type="hidden" th:field="*{id}">
+
+          <div class="mb-3">
+            <label class="form-label">Product Name</label>
+            <input type="text" class="form-control" th:field="*{name}" placeholder="Enter product name" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Category</label>
+            <select class="form-select" th:field="*{category}" required>
+              <option value="" enabled selected>Select Category</option>
+              <option th:each="category : ${categories}" th:value="${category.id}" th:text="${category.name}"></option>
+            </select>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Price (₹)</label>
+            <input type="number" class="form-control" th:field="*{price}" step="0.01" placeholder="Enter product price" required>
+          </div>
+
+          <div class="mb-3">
+            <label class="form-label">Description</label>
+            <textarea class="form-control" th:field="*{description}" rows="4" placeholder="Enter product description" required></textarea>
+          </div>
+
+          
+          <div class="mb-4">
+            <label for="image" class="form-label">Upload Product Image</label>
+            <input type="file" id="image" name="image" class="form-control" accept="image/jpeg, image/png, image/jpg" required>
+          </div>
+
+          <div class="form-group text-center">
+            <img id="imgPreview" height="100px" width="100px" class="d-none rounded shadow-sm" src="" alt="Image Preview">
+          </div>
+          <br>
+
+          <input type="hidden" th:field="*{imgName}">
+          <input type="hidden" th:field="*{sellerID}" th:value="${seller.id}" />
+          
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-submit py-2">
+              <i class="bi bi-upload me-2"></i>Save Product
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    
+    <div th:if="${msg.equals('addCategory')}">
+      <div class="form-container">
+        <h3 class="form-title"><i class="bi bi-folder-plus me-2"></i>Add New Category</h3>
+        <form th:action="@{/categories/save}" method="post" th:object="${categoryDTO}" enctype="multipart/form-data">
+          <input type="hidden" th:field="*{id}">
+
+          <div class="mb-3">
+            <label for="name" class="form-label">Category Name</label>
+            <input type="text" id="name" class="form-control" th:field="*{name}" placeholder="Enter category name" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="image_category" class="form-label">Category Image</label>
+            <input type="file" id="image_category" name="image" class="form-control" accept="image/jpeg, image/png, image/jpg" required>
+          </div>
+
+          <div class="form-group text-center">
+            <img id="imgPreview_category" height="100px" width="100px" class="d-none rounded shadow-sm" src="" alt="Image Preview">
+          </div>
+          <br>
+
+          <input type="hidden" th:field="*{imgName}">
+
+          <div class="d-grid">
+            <button type="submit" class="btn btn-submit py-2">
+              <i class="bi bi-upload me-2"></i>Save Category
+            </button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+
+    <div th:if="${msg.equals('products')}">
+      <div class="container mt-4">
+        <h5 class="text-primary mb-4"><i class="bi bi-box-seam me-2"></i>Manage All Products</h5>
+        <div class="row g-4">
+          <div class="col-lg-3 col-md-4 col-sm-6" th:each="product : ${products}">
+            <div class="card h-100 border-0 shadow-sm product-card">
+              <div class="card-img-container p-3 text-center">
+                <img th:src="@{'/p_images/' + ${product.imgName}}" th:alt="${product.name}"
+                    class="card-img-top img-fluid" style="height: 180px; object-fit: contain;">
+              </div>
+              <div class="card-body">
+                <h6 class="card-title fw-semibold mb-2" th:text="${product.name}">Product Name</h6>
+                <p class="text-muted mb-1"><strong>Category:</strong> <span th:text="${product.category.name}"></span></p>
+                <p class="mb-1"><strong>Price:</strong> ₹<span th:text="${product.price}"></span></p>
+                <p class="mb-1">
+                  <strong>Status:</strong> 
+                  <span th:if="${product.available}" class="badge bg-success">Available</span>
+                  <span th:unless="${product.available}" class="badge bg-danger">Out of Stock</span>
+                </p>
+                <p class="text-secondary small" th:text="${product.description}"></p>
+              </div>
+              <div class="card-footer bg-white border-0 d-flex justify-content-between">
+                <a th:href="@{/update/product/{id}(id=${product.id})}" class="btn btn-outline-primary btn-sm">
+                  <i class="bi bi-pencil-square"></i> Update
+                </a>
+                
+                <a th:if="${product.available}" 
+                   th:href="@{/update/delete/{id}(id=${product.id})}" 
+                   class="btn btn-sm btn-outline-danger toggle-availability-btn" 
+                   data-status-to="false"
+                   th:data-product-name="${product.name}">
+                  <i class="bi bi-x-octagon"></i> Mark as Out of Stock
+                </a>
+                
+                <a th:unless="${product.available}" 
+                   th:href="@{/update/delete/{id}(id=${product.id})}" 
+                   class="btn btn-sm btn-outline-success toggle-availability-btn"
+                   data-status-to="true"
+                   th:data-product-name="${product.name}">
+                  <i class="bi bi-check-circle"></i> Mark as Available
+                </a>
+                
+              </div>
+            </div>
+          </div>
+
+          <div th:if="${#lists.isEmpty(products)}" class="text-center text-muted mt-5">
+            <p>No products available</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    
+    
+    <div th:if="${msg.equals('orders')}">
+      <div class="card shadow-sm mt-4">
+        <div class="card-body">
+          <h5 class="card-title mb-3 text-primary"><i class="bi bi-cart4 me-2"></i>Order Details</h5>
+          <div class="table-responsive">
+            <table class="table table-hover align-middle">
+              <thead class="table-primary">
+                <tr>
+                  <th>Order ID</th>
+                  <th>User Name</th>
+                  <th>Total Amount (₹)</th>
+                  <th>Payment Mode</th>
+                  <th>Status</th>
+                  <th>Action</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr th:each="order : ${orders}">
+                  <td th:text="${order.orderId}"></td>
+                  <td th:text="${order.orderAddress.firstName}"></td>
+                  <td th:text="${order.price}"></td>
+                  <td th:text="${order.paymentType}"></td>
+                  <td>
+                    <span th:text="${order.Status}"
+                          th:class="${order.Status == 'Delivered' ? 'badge bg-success' :
+                          order.Status == 'Cancelled' ? 'badge bg-danger' :
+                          'badge bg-warning text-dark'}">
+                    </span>
+                  </td>
+                  <td>
+                    <a th:href="@{/update/view-order/{id}(id=${order.id})}" class="btn btn-sm btn-outline-primary">
+                      <i class="bi bi-eye"></i> View
+                    </a>
+                  </td>
+                </tr>
+                <tr th:if="${#lists.isEmpty(orders)}">
+                  <td colspan="6" class="text-center text-muted">No orders found</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div th:if="${msg.equals('updateProduct')}">
+      <div class="form-container">
+        
+        <h3 class="form-title"><i class="bi bi-pencil-square me-2"></i>Update Product Details</h3>
+
+        <form th:action="@{/update/item}" th:object="${existingProduct}" method="post" enctype="multipart/form-data">
+
+          <input type="hidden" th:field="*{id}"/>
+          <input type="hidden" th:field="*{imgName}"/>
+          <input type="hidden" th:field="*{category.id}"/>
+          <input type="hidden" th:field="*{seller.id}"/>
+
+          <div class="card mb-4 p-3 border-light shadow-sm">
+              <h5 class="card-title text-center text-secondary mb-3">Product Overview</h5>
+              <div class="row align-items-center">
+                  <div class="col-md-4 text-center">
+                      <div class="image-preview" style="display: block; border: none;">
+                          <img th:src="@{'/p_images/' + ${existingProduct.imgName}}" alt="Current Product Image">
+                      </div>
+                  </div>
+                  <div class="col-md-8 product-details-display">
+                      <p class="fw-bold mb-1"><i class="bi bi-tag me-2 text-info"></i>Product ID: <span class="fw-normal text-muted" th:text="*{id}"></span></p>
+                      <p class="fw-bold mb-1"><i class="bi bi-folder me-2 text-info"></i>Category: <span class="fw-normal text-muted" th:text="*{category.name}"></span></p>
+                  </div>
+              </div>
+          </div>
+          
+          <hr class="my-4">
+
+          <div class="mb-3">
+            <label for="name_update" class="form-label">Product Name</label>
+            <input type="text" id="name_update" class="form-control" placeholder="Enter product name" th:field="*{name}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="price_update" class="form-label">Price (₹)</label>
+            <input type="number" id="price_update" class="form-control" step="0.01" min="0" placeholder="Enter price" th:field="*{price}" required>
+          </div>
+
+          <div class="mb-3">
+            <label for="description_update" class="form-label">Description</label>
+            <textarea id="description_update" class="form-control" rows="4" placeholder="Enter product description" th:field="*{description}" required></textarea>
+          </div>
+          
+          <div class="d-grid mt-4">
+              <button type="submit" class="btn btn-submit py-2">
+                  <i class="bi bi-arrow-up-circle me-2"></i>Save Changes
+              </button>
+          </div>
+        </form>
+      </div>
+    </div>
+    
+    
+    <div th:if="${msg.equals('profile')}">
+      <div class="profile-card">
+        
+        <div class="profile-header">
+          <img th:src="@{/s_images/default.png}"
+     			onerror="this.onerror=null; this.src='https://cdn3d.iconscout.com/3d/premium/thumb/man-avatar-6299537-5187865.png'"
+     			alt="Seller Avatar" class="profile-avatar" id="sellerAvatar">
+
+          <h4 class="text-primary fw-bold" th:text="${seller != null ? seller.name : 'Seller Name'}">MAX STORE Seller</h4>
+          <p class="text-muted mb-0" th:text="${seller != null ? seller.email : 'seller@maxstore.com'}">seller@maxstore.com</p>
+        </div>
+        
+        <h5 class="text-secondary mb-3"><i class="bi bi-info-circle me-2"></i>Seller Information</h5>
+        
+        <div class="view-mode" id="profileView">
+          <div class="container-fluid">
+            
+            <div class="row detail-row">
+              <div class="col-4 detail-label">ID</div>
+              <div class="col-8 detail-value" th:text="${seller != null ? seller.id : 'N/A'}">1001</div>
+            </div>
+
+            <div class="row detail-row">
+              <div class="col-4 detail-label">Phone</div>
+              <div class="col-8 detail-value" th:text="${seller != null ? seller.phone : 'N/A'}">+91 98765 43210</div>
+            </div>
+
+            
+
+   <div class="row detail-row">
+              <div class="col-4 detail-label">Status</div>
+              <div class="col-8">
+    <span class="badge bg-success" 
+          th:if="${seller != null and seller.status == 'Active'}">
+        Active
+    </span>
+    <span class="badge bg-danger" 
+          th:if="${seller != null and seller.status == 'Inactive'}">
+        Inactive
+    </span>
+</div>
+
+            </div>
+          </div>
+          
+          <div class="mt-4 text-center">
+              <button id="editProfileBtn" class="btn btn-outline-primary"><i class="bi bi-pencil-square me-2"></i>Edit Profile</button>
+          </div>
+        </div>
+        
+        <div class="edit-mode" id="profileEdit">
+            <form th:action="@{/update/seller-profile}" method="post" th:object="${seller}">
+                <input type="hidden" th:field="*{id}"/>
+                
+                
+                <div class="container-fluid">
+                    
+                    <div class="mb-3">
+                        <label for="name_edit" class="form-label detail-label">Full Name</label>
+                        <input type="text" id="name_edit" class="form-control" th:field="*{name}" placeholder="Enter full name" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="email_edit" class="form-label detail-label">Email</label>
+                        <input type="email" id="email_edit" class="form-control" th:field="*{email}" placeholder="Enter email address" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label for="phone_edit" class="form-label detail-label">Phone Number</label>
+                        <input type="text" id="phone_edit" class="form-control" th:field="*{phone}" placeholder="Enter phone number" required>
+                    </div>
+                    
+                 	<div class="mb-3">
+    					<label class="form-label detail-label d-block">Status</label>
+    					<div class="form-check form-check-inline">
+        					<input class="form-check-input" type="radio" th:field="*{status}" id="statusActive" value="Active">
+        					<label class="form-check-label" for="statusActive">Active</label>
+    					</div>
+    					<div class="form-check form-check-inline">
+        					<input class="form-check-input" type="radio" th:field="*{status}" id="statusInactive" value="Inactive">
+        					<label class="form-check-label" for="statusInactive">Inactive</label>
+    					</div>
+					</div>
+                </div>
+                
+                <div class="mt-4 text-center d-flex justify-content-center gap-3">
+                    <button type="submit" class="btn btn-submit"><i class="bi bi-save me-2"></i>Save Changes</button>
+                    <button type="button" id="cancelEditBtn" class="btn btn-outline-secondary"><i class="bi bi-x-circle me-2"></i>Cancel</button>
+                </div>
+            </form>
+        </div>
+        
+      </div>
+    </div>
+
+
+    <!-- Order View Section -->
+    <div th:if="${msg.equals('orderView')}">
+      <div class="order-view-container">
+        <div class="d-flex justify-content-between align-items-center mb-4">
+          <h4 class="text-primary fw-bold"><i class="bi bi-cart-check me-2"></i>Order Details</h4>
+          <a th:href="@{/seller/orders}" class="btn back-btn">
+            <i class="bi bi-arrow-left me-2"></i>Back to Orders
+          </a>
+        </div>
+
+        <!-- Order Header Card -->
+        <div class="order-header-card">
+          <div class="row align-items-center">
+            <div class="col-md-6">
+              <h3 class="fw-bold mb-2" th:text="'Order #' + ${productOrder.orderId}">Order #ORD12345</h3>
+              <p class="mb-1"><i class="bi bi-calendar-event me-2"></i>Order Date: <span th:text="${productOrder.orderDate}"></span></p>
+              <p class="mb-0"><i class="bi bi-truck me-2"></i>Expected Delivery: <span th:text="${productOrder.deliveryDate}"></span></p>
+            </div>
+            <div class="col-md-6 text-md-end">
+              <span class="order-status-badge badge" 
+                    th:class="${productOrder.Status == 'Delivered' ? 'bg-success' :
+                              productOrder.Status == 'Cancelled' ? 'bg-danger' :
+                              productOrder.Status == 'Shipped' ? 'bg-info' :
+                              'bg-warning text-dark'}">
+                <span th:text="${productOrder.Status}"></span>
+              </span>
+              <p class="mt-2 mb-1">Payment Method: <strong th:text="${productOrder.paymentType}"></strong></p>
+              <h4 class="fw-bold mt-2" th:text="'₹' + ${productOrder.price}">₹2,499</h4>
+            </div>
+          </div>
+        </div>
+
+        <div class="row">
+          <!-- Product Details -->
+          <div class="col-lg-8">
+            <div class="product-details-card card">
+              <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-box-seam me-2"></i>Product Details</h6>
+              </div>
+              <div class="card-body">
+                <div class="row">
+                  <div class="col-md-4">
+                    <div class="product-image-container">
+                      <img th:src="@{'/p_images/' + ${productOrder.product.imgName}}" 
+                           th:alt="${productOrder.product.name}" 
+                           class="img-fluid rounded">
+                    </div>
+                  </div>
+                  <div class="col-md-8">
+                    <div class="detail-item">
+                      <div class="detail-label">Product Name</div>
+                      <div class="detail-value fw-semibold" th:text="${productOrder.product.name}"></div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">Description</div>
+                      <div class="detail-value" th:text="${productOrder.product.description}"></div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">Category</div>
+                      <div class="detail-value" th:text="${productOrder.product.category}"></div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">Original Price</div>
+                      <div class="detail-value" th:text="'₹' + ${productOrder.product.price}"></div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">Selling Price</div>
+                      <div class="detail-value fw-bold text-success" th:text="'₹' + ${productOrder.price}"></div>
+                    </div>
+                    <div class="detail-item">
+                      <div class="detail-label">Quantity</div>
+                      <div class="detail-value" th:text="${productOrder.quantity}"></div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Customer & Shipping Details -->
+          <div class="col-lg-4">
+            <!-- Customer Details -->
+            <div class="customer-details-card card mb-4">
+              <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-person me-2"></i>Customer Details</h6>
+              </div>
+              <div class="card-body">
+                <div class="detail-item">
+                  <div class="detail-label">Name</div>
+                  <div class="detail-value fw-semibold" th:text="${productOrder.user.name}"></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Email</div>
+                  <div class="detail-value" th:text="${productOrder.user.email}"></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Phone</div>
+                  <div class="detail-value" th:text="${productOrder.user.phone}"></div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Shipping Address -->
+            <div class="customer-details-card card">
+              <div class="card-header">
+                <h6 class="mb-0"><i class="bi bi-geo-alt me-2"></i>Shipping Address</h6>
+              </div>
+              <div class="card-body">
+                <div class="detail-item">
+                  <div class="detail-label">Full Name</div>
+                  <div class="detail-value fw-semibold" 
+                       th:text="${productOrder.orderAddress.firstName + ' ' + productOrder.orderAddress.lastName}"></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Contact</div>
+                  <div class="detail-value" th:text="${productOrder.orderAddress.mobile}"></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Address</div>
+                  <div class="detail-value" th:text="${productOrder.orderAddress.address}"></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">City</div>
+                  <div class="detail-value" th:text="${productOrder.orderAddress.city}"></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">State</div>
+                  <div class="detail-value" th:text="${productOrder.orderAddress.state}"></div>
+                </div>
+                <div class="detail-item">
+                  <div class="detail-label">Pincode</div>
+                  <div class="detail-value" th:text="${productOrder.orderAddress.pincode}"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <footer>
+      <p>© 2025 MAX STORE | Seller Dashboard by Naidu</p>
+    </footer>
+  </div>
+
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+
+  <script>
+    // Script for ADD Product Image Preview
+    document.addEventListener('DOMContentLoaded', function() {
+      const imageInput = document.getElementById('image');
+      const imgPreview = document.getElementById('imgPreview');
+
+      if (imageInput) {
+        imageInput.addEventListener('change', function(event) {
+          if (event.target.files && event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              imgPreview.src = e.target.result;
+              imgPreview.classList.remove('d-none');
+            };
+            reader.readAsDataURL(event.target.files[0]);
+          } else {
+            imgPreview.src = "";
+            imgPreview.classList.add('d-none');
+          }
+        });
+      }
+    });
+  </script>
+
+  <script>
+    // Script for ADD Category Image Preview
+    document.addEventListener('DOMContentLoaded', function() {
+      const imageInputCategory = document.getElementById('image_category');
+      const imgPreviewCategory = document.getElementById('imgPreview_category');
+
+      if (imageInputCategory) {
+        imageInputCategory.addEventListener('change', function(event) {
+          if (event.target.files && event.target.files[0]) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+              imgPreviewCategory.src = e.target.result;
+              imgPreviewCategory.classList.remove('d-none');
+            };
+            reader.readAsDataURL(event.target.files[0]);
+          } else {
+            imgPreviewCategory.src = "";
+            imgPreviewCategory.classList.add('d-none');
+          }
+        });
+      }
+    });
+  </script>
+
+
+  <script>
+    // Script for Availability Toggle Confirmation (Updated from Delete Confirmation)
+    document.querySelectorAll('.toggle-availability-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('href');
+        const isAvailable = this.getAttribute('data-status-to') === 'true';
+        const productName = this.getAttribute('data-product-name');
+        
+        const title = isAvailable ? 'Mark as Available?' : 'Mark as Out of Stock?';
+        const text = isAvailable 
+            ? `Are you sure you want to mark "${productName}" as available for sale?` 
+            : `Are you sure you want to mark "${productName}" as out of stock? This will remove it from customer view.`;
+        const confirmButtonText = isAvailable ? 'Yes, Make Available!' : 'Yes, Out of Stock!';
+        const icon = isAvailable ? 'question' : 'warning';
+        const confirmButtonColor = isAvailable ? '#28a745' : '#d33';
+
+        Swal.fire({
+          title: title,
+          text: text,
+          icon: icon,
+          showCancelButton: true,
+          confirmButtonColor: confirmButtonColor,
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: confirmButtonText,
+          cancelButtonText: 'Cancel',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = url;
+          }
+        });
+      });
+    });
+    
+    // Kept for any other 'delete-btn' elements that might exist, though the main one was updated.
+    document.querySelectorAll('.delete-btn').forEach(btn => {
+      btn.addEventListener('click', function(e) {
+        e.preventDefault();
+        const url = this.getAttribute('data-href');
+
+        Swal.fire({
+          title: 'Are you sure?',
+          text: "You won't be able to revert this!",
+          icon: 'warning',
+          showCancelButton: true,
+          confirmButtonColor: '#d33',
+          cancelButtonColor: '#3085d6',
+          confirmButtonText: 'Yes, delete it!',
+          cancelButtonText: 'Cancel',
+          reverseButtons: true
+        }).then((result) => {
+          if (result.isConfirmed) {
+            window.location.href = url;
+          }
+        });
+      });
+    });
+  </script>
+
+  <script>
+    // Script for Profile Edit Toggle
+    document.addEventListener('DOMContentLoaded', function() {
+        const profileView = document.getElementById('profileView');
+        const profileEdit = document.getElementById('profileEdit');
+        const editBtn = document.getElementById('editProfileBtn');
+        const cancelBtn = document.getElementById('cancelEditBtn');
+
+        // Function to toggle between view and edit modes
+        function toggleEditMode(isEditing) {
+            if (isEditing) {
+                profileView.classList.remove('view-mode');
+                profileView.classList.add('edit-mode');
+                profileEdit.classList.remove('edit-mode');
+                profileEdit.classList.add('view-mode');
+            } else {
+                profileView.classList.remove('edit-mode');
+                profileView.classList.add('view-mode');
+                profileEdit.classList.remove('view-mode');
+                profileEdit.classList.add('edit-mode');
+            }
+        }
+
+        // Edit button click handler
+        if (editBtn) {
+            editBtn.addEventListener('click', function() {
+                toggleEditMode(true);
+            });
+        }
+        
+        // Cancel button click handler
+        if (cancelBtn) {
+            cancelBtn.addEventListener('click', function() {
+                toggleEditMode(false);
+            });
+        }
+    });
+  </script>
+
+</body>
+</html>

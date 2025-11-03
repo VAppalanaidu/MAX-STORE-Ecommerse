@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title th:text="${category.name} + ' - MAX STORE'">Category - MAX STORE</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f1f3f6;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    .navbar {
+      background-color: #2874f0;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #fff !important;
+    }
+    .navbar .nav-link {
+      color: white !important;
+      margin-left: 15px;
+      font-weight: 500;
+    }
+    .navbar .nav-link:hover {
+      color: #ff9f00 !important;
+    }
+
+    .category-header {
+      text-align: center;
+      margin-top: 40px;
+      margin-bottom: 20px;
+    }
+    .category-header h3 {
+      font-weight: 700;
+      color: #2874f0;
+    }
+    .category-header p {
+      color: #777;
+    }
+
+    .product-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+      gap: 30px;
+      justify-items: center;
+    }
+
+    .product-tile {
+      border-radius: 12px;
+      overflow: hidden;
+      transition: all 0.3s ease-in-out;
+      background: #fff;
+      width: 100%;
+      max-width: 320px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+      position: relative;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .product-tile:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 6px 18px rgba(0, 0, 0, 0.12);
+    }
+
+    .image-container {
+      width: 100%;
+      height: auto;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      background-color: #f9f9f9;
+      position: relative;
+      padding: 20px;
+    }
+    .image-container img {
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+      transition: transform 0.3s ease;
+    }
+    .image-container img:hover {
+      transform: scale(1.07);
+    }
+
+    /* Out of Stock Overlay */
+    .out-of-stock-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(255, 255, 255, 0.7);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.2rem;
+      font-weight: 700;
+      color: red;
+      z-index: 10;
+      text-transform: uppercase;
+    }
+
+    .product-tile.out-of-stock img {
+      opacity: 0.5;
+      filter: grayscale(80%);
+    }
+
+    .product-tile .card-body {
+      text-align: center;
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    .product-tile .card-title {
+      font-weight: 600;
+      color: #2874f0;
+      font-size: 1.05rem;
+      margin-bottom: 8px;
+      min-height: 40px;
+      line-height: 1.3;
+    }
+    .product-tile .price {
+      color: #212121;
+      font-size: 1.2rem;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+
+    .btn-warning {
+      background-color: #ff9f00;
+      border: none;
+      color: white;
+      transition: background 0.3s;
+      font-weight: 600;
+    }
+    .btn-warning:hover {
+      background-color: #e68a00;
+    }
+    .btn-disabled {
+      background-color: #ccc !important;
+      color: #666 !important;
+      cursor: not-allowed;
+    }
+
+    .product-card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      transition: box-shadow 0.3s ease;
+      display: flex;
+      align-items: flex-start;
+      padding: 20px;
+      margin-bottom: 25px;
+      position: relative;
+    }
+    .product-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    .product-card.out-of-stock img {
+      opacity: 0.5;
+      filter: grayscale(80%);
+    }
+    .product-card .out-of-stock-overlay {
+      font-size: 1.3rem;
+    }
+
+    .product-img-container {
+      width: 180px; 
+      height: auto;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 20px;
+      padding: 10px;
+      position: relative;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+    .product-img-container img {
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+
+    .product-details {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+    }
+    .card-title {
+      font-weight: 600;
+      color: #2874f0;
+      font-size: 1.2rem;
+      margin-bottom: 5px;
+    }
+    .card-text {
+      color: #555;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+      line-height: 1.4;
+      flex-grow: 1;
+    }
+
+    .price-action-container {
+      width: 200px;
+      text-align: right;
+      flex-shrink: 0;
+      margin-left: 20px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+    .price {
+      font-weight: 700;
+      font-size: 1.7rem;
+      color: #212121;
+      margin-bottom: 5px;
+      display: block;
+    }
+    .original-price {
+      font-size: 0.9rem;
+      color: #888;
+      text-decoration: line-through;
+      margin-right: 10px;
+    }
+    .discount {
+      font-size: 0.9rem;
+      font-weight: 600;
+      color: #388e3c;
+    }
+
+    .no-products {
+      text-align: center;
+      margin-top: 60px;
+    }
+    .no-products img {
+      width: 150px;
+      margin-bottom: 20px;
+      opacity: 0.8;
+    }
+    .no-products h5 {
+      font-weight: 600;
+      color: #555;
+    }
+
+    footer {
+      background: #172337;
+      color: white;
+      text-align: center;
+      padding: 25px 0;
+      margin-top: 50px;
+      font-size: 0.9rem;
+    }
+
+    @media (max-width: 768px) {
+      .product-grid {
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+      }
+    }
+
+    .badge { transition: transform 0.3s ease; }
+    .badge.updated { transform: scale(1.3); }
+    li.nav-item { list-style: none; }
+    .btn-add-cart {
+      background-color: #ff9f00;
+      border: none;
+      color: white;
+      transition: background 0.3s;
+      font-weight: 600;
+      width: 100%;
+    }
+    .btn-add-cart:hover {
+        background-color: #e68a00;
+    }
+    
+    /* View Options Styles */
+    .view-options {
+      display: flex;
+      justify-content: flex-end;
+      margin-bottom: 20px;
+      gap: 10px;
+    }
+    
+    .view-btn {
+      background: #f1f3f6;
+      border: 1px solid #ddd;
+      border-radius: 6px;
+      padding: 8px 12px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      width: 40px;
+      height: 40px;
+    }
+    
+    .view-btn.active {
+      background: #2874f0;
+      color: white;
+      border-color: #2874f0;
+    }
+    
+    .view-btn:hover {
+      background: #e0e0e0;
+    }
+    
+    .view-btn.active:hover {
+      background: #1c5dc1;
+    }
+    
+    /* Horizontal List View */
+    .product-horizontal-list {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+    
+    .horizontal-product-card {
+      background: #fff;
+      border-radius: 10px;
+      border: 1px solid #e0e0e0;
+      transition: box-shadow 0.3s ease;
+      display: flex;
+      align-items: center;
+      padding: 25px; /* Increased padding for more height */
+      position: relative;
+      min-height: 200px; /* Added minimum height */
+    }
+    
+    .horizontal-product-card:hover {
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+    
+    .horizontal-product-card.out-of-stock img {
+      opacity: 0.5;
+      filter: grayscale(80%);
+    }
+    
+    .horizontal-product-img-container {
+      width: 150px; /* Increased from 120px */
+      height: auto;
+      flex-shrink: 0;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin-right: 25px; /* Increased margin for more spacing */
+      padding: 15px; /* Increased padding */
+      position: relative;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+    }
+    
+    .horizontal-product-img-container img {
+      max-height: 100%;
+      max-width: 100%;
+      width: auto;
+      height: auto;
+      object-fit: contain;
+    }
+    
+    .horizontal-product-details {
+      flex-grow: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center; /* Center content vertically */
+    }
+    
+    .horizontal-price-action-container {
+      width: 180px; /* Increased from 150px */
+      text-align: right;
+      flex-shrink: 0;
+      margin-left: 25px; /* Increased margin */
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+    }
+    
+    /* View Containers */
+    #productsGridView {
+      display: none;
+    }
+    
+    #productsHorizontalView {
+      display: block;
+    }
+    
+    /* Fix for consistent button placement */
+    .btn-container {
+      margin-top: auto;
+    }
+    
+    .price-action-container .btn-container {
+      margin-top: 15px;
+    }
+    
+    /* Increase font sizes for horizontal view for better proportion */
+    .horizontal-product-card .card-title {
+      font-size: 1.3rem; /* Slightly larger */
+      margin-bottom: 10px;
+    }
+    
+    .horizontal-product-card .card-text {
+      font-size: 1rem; /* Slightly larger */
+      line-height: 1.5;
+    }
+    
+    .horizontal-product-card .price {
+      font-size: 1.9rem; /* Slightly larger */
+    }
+    
+    .horizontal-product-card .btn-add-cart {
+      padding: 10px 15px; /* Larger button */
+      font-size: 1rem;
+    }
+  </style>
+</head>
+
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark px-4 shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" th:href="@{/home/}">MAX STORE</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="ms-auto d-flex align-items-center">
+          <span class="text-white me-3 fw-semibold" th:text="|Hi, ${user.name}|">Hi, </span>
+          <ul class="navbar-nav d-flex flex-row align-items-center mb-0">
+            <li class="nav-item">
+      			<a class="nav-link" th:href="@{/home/profile}"><i class="bi bi-person-circle"></i> Profile</a>
+    		</li>
+            <li class="nav-item position-relative">
+              <a class="nav-link d-flex align-items-center" th:href="@{/cart/}">
+                <i class="bi bi-cart3 fs-5"></i>
+                <span class="ms-1">Cart</span>
+                <span th:text="${cartCount}"
+                      class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
+                      style="font-size: 0.7rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+                  0
+                </span>
+              </a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/user/logout}">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <div class="category-header container">
+    <h3 th:text="${category.name}">Category Name</h3>
+    <p th:text="|Explore all ${category.name} products|">Explore our best products</p>
+  </div>
+
+  <div class="container my-4">
+    <!-- View Options -->
+    <div class="view-options">
+      <button class="view-btn active" id="horizontalViewBtn" onclick="toggleView('horizontal')">
+        <i class="bi bi-layout-text-sidebar"></i>
+      </button>
+      <button class="view-btn" id="gridViewBtn" onclick="toggleView('grid')">
+        <i class="bi bi-grid-3x3-gap"></i>
+      </button>
+    </div>
+
+    <!-- Products Horizontal View -->
+    <div id="productsHorizontalView">
+      <div class="product-horizontal-list">
+
+        <div class="horizontal-product-card" 
+             th:each="prod : ${products.?[available]}">
+          <div class="horizontal-product-img-container">
+            <a th:href="@{/cart/{id}(id=${prod.id})}">
+              <img th:src="@{'/p_images/' + ${prod.imgName}}" th:alt="${prod.name}" class="img-fluid">
+            </a>
+          </div>
+
+          <div class="horizontal-product-details">
+            <a th:href="@{/cart/{id}(id=${prod.id})}" style="text-decoration: none;">
+              <h5 class="card-title" th:text="${prod.name}">Product Name</h5>
+            </a>
+            <ul class="card-text">
+              <li th:each="descItem : ${#strings.arraySplit(prod.description, '\\|')}" th:text="${descItem}"></li>
+            </ul>
+          </div>
+
+          <div class="horizontal-price-action-container">
+            <span class="price" th:text="|₹${#numbers.formatDecimal(prod.price, 0, 'COMMA', 0, 'POINT')}|">₹33,999</span>
+            <div class="discount-info">
+              <span class="original-price" th:text="|₹${#numbers.formatDecimal(prod.price * 1.1, 0, 'COMMA', 0, 'POINT')}|">₹37,999</span>
+              <span class="discount">10% off</span>
+            </div>
+            <div class="btn-container">
+              <a th:href="@{/cart/{id}(id=${prod.id})}"><button class="btn btn-add-cart">View</button></a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="horizontal-product-card out-of-stock" 
+             th:each="prod : ${products.?[!available]}">
+          <div class="horizontal-product-img-container">
+            <a th:href="@{/cart/{id}(id=${prod.id})}">
+              <img th:src="@{'/p_images/' + ${prod.imgName}}" th:alt="${prod.name}" class="img-fluid">
+            </a>
+            <div class="out-of-stock-overlay">Out of Stock</div>
+          </div>
+
+          <div class="horizontal-product-details">
+            <a th:href="@{/cart/{id}(id=${prod.id})}" style="text-decoration: none;">
+              <h5 class="card-title" th:text="${prod.name}">Product Name</h5>
+            </a>
+            <ul class="card-text">
+              <li th:each="descItem : ${#strings.arraySplit(prod.description, '\\|')}" th:text="${descItem}"></li>
+            </ul>
+          </div>
+
+          <div class="horizontal-price-action-container">
+            <span class="price" th:text="|₹${#numbers.formatDecimal(prod.price, 0, 'COMMA', 0, 'POINT')}|">₹33,999</span>
+            <div class="discount-info">
+              <span class="original-price" th:text="|₹${#numbers.formatDecimal(prod.price * 1.1, 0, 'COMMA', 0, 'POINT')}|">₹37,999</span>
+              <span class="discount">10% off</span>
+            </div>
+            <div class="btn-container">
+              <button class="btn btn-disabled w-100 fw-semibold" disabled>Out of Stock</button>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+
+    <!-- Products Grid View -->
+    <div id="productsGridView">
+      <div class="product-grid">
+        
+        <div class="card product-tile shadow-sm border-0" 
+             th:each="prod : ${products.?[available]}"
+             th:classappend="${!prod.available} ? ' out-of-stock' : ''">
+
+          <div class="image-container">
+            <img th:src="@{'/p_images/' + ${prod.imgName}}" th:alt="${prod.name}" class="card-img-top">
+          </div>
+
+          <div class="card-body text-center">
+            <div class="product-details">
+              <a th:href="@{/cart/{id}(id=${prod.id})}" style="text-decoration: none;">
+                <h5 class="card-title" th:text="${prod.name}">Product Name</h5>
+              </a>
+              <ul class="card-text">
+                <li th:each="descItem : ${#strings.arraySplit(prod.description, '\\|')}" th:text="${descItem}"></li>
+              </ul>
+            </div>
+            <p class="price" th:text="|₹${#numbers.formatDecimal(prod.price, 0, 'COMMA', 0, 'POINT')}|">₹1,999</p>
+            <div class="btn-container">
+              <a th:href="@{/cart/{id}(id=${prod.id})}" 
+   				class="btn btn-sm btn-warning w-100 fw-semibold">
+    			<i class="bi bi-cart-plus"></i> View
+			  </a>
+            </div>
+          </div>
+        </div>
+        
+        <div class="card product-tile shadow-sm border-0 out-of-stock" 
+             th:each="prod : ${products.?[!available]}">
+
+          <div class="image-container">
+            <img th:src="@{'/p_images/' + ${prod.imgName}}" th:alt="${prod.name}" class="card-img-top">
+            <div class="out-of-stock-overlay">Out of Stock</div>
+          </div>
+
+          <div class="card-body text-center">
+            <div class="product-details">
+              <a th:href="@{/cart/{id}(id=${prod.id})}" style="text-decoration: none;">
+                <h5 class="card-title" th:text="${prod.name}">Product Name</h5>
+              </a>
+              <ul class="card-text">
+                <li th:each="descItem : ${#strings.arraySplit(prod.description, '\\|')}" th:text="${descItem}"></li>
+              </ul>
+            </div>
+            <p class="price" th:text="|₹${#numbers.formatDecimal(prod.price, 0, 'COMMA', 0, 'POINT')}|">₹1,999</p>
+            <div class="btn-container">
+              <button class="btn btn-sm btn-disabled w-100 fw-semibold" disabled>
+                Out of Stock
+              </button>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <div class="no-products" th:if="${#lists.isEmpty(products)}">
+      <img src="https://cdn-icons-png.flaticon.com/512/4076/4076500.png" alt="No Products">
+      <h5>No products available in this category</h5>
+    </div>
+
+  </div>
+
+  <footer>
+    <p class="mb-0">© 2025 MAX STORE | Designed by Naidu</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    function animateCartBadge() {
+      const badge = document.querySelector('.badge');
+      badge.classList.add('updated');
+      setTimeout(() => badge.classList.remove('updated'), 300);
+    }
+    
+    // View Toggle Functionality
+    function toggleView(viewType) {
+      const gridView = document.getElementById('productsGridView');
+      const horizontalView = document.getElementById('productsHorizontalView');
+      const gridBtn = document.getElementById('gridViewBtn');
+      const horizontalBtn = document.getElementById('horizontalViewBtn');
+      
+      // Hide all views
+      gridView.style.display = 'none';
+      horizontalView.style.display = 'none';
+      
+      // Remove active class from all buttons
+      gridBtn.classList.remove('active');
+      horizontalBtn.classList.remove('active');
+      
+      // Show selected view and activate its button
+      if (viewType === 'grid') {
+        gridView.style.display = 'block';
+        gridBtn.classList.add('active');
+      } else if (viewType === 'horizontal') {
+        horizontalView.style.display = 'block';
+        horizontalBtn.classList.add('active');
+      }
+    }
+    
+    // Initialize page with horizontal view as default
+    document.addEventListener('DOMContentLoaded', function() {
+      toggleView('horizontal');
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,641 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Profile</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
+    <style>
+        /* --- Global Styles (Same as before) --- */
+
+        .order-address {
+            max-width: 400px;
+            font-size: 15px;
+            line-height: 1.6;
+        }
+
+        .order-address strong {
+            width: 90px;
+            display: inline-block;
+            color: #333;
+        }
+
+        .order-address span {
+            color: #555;
+        }
+
+        .order-address h6 {
+            border-bottom: 2px solid #0d6efd;
+            display: inline-block;
+            padding-bottom: 4px;
+        }
+
+        :root {
+            --primary-color: #007bff;
+            --secondary-color: #6c757d;
+            --success-color: #28a745;
+            --danger-color: #dc3545;
+            --warning-color: #ffc107;
+            --info-color: #17a2b8;
+            --light-color: #f8f9fa;
+            --dark-color: #343a40;
+            --white-color: #ffffff;
+            --border-radius: 8px;
+            --shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--light-color);
+            color: var(--dark-color);
+            margin: 0;
+            padding: 20px;
+        }
+        h1, h2, h3 { margin-top: 0; font-weight: 600; }
+
+        /* --- Main Container & Grid (UPDATED for icon spacing) --- */
+        .profile-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            position: relative; /* Establish positioning context for absolute icons */
+            padding-top: 50px; /* Add space for the top icons */
+        }
+        .profile-container > h1 {
+            margin-bottom: 24px;
+            font-size: 2.5rem;
+            /* Move H1 down to clear the icons */
+            padding-top: 10px;
+        }
+        .profile-grid { display: grid; grid-template-columns: 1fr 2fr; gap: 24px; }
+        .card {
+            background-color: var(--white-color);
+            border-radius: var(--border-radius);
+            box-shadow: var(--shadow);
+            padding: 24px;
+            border: 1px solid #e9ecef;
+        }
+
+        /* --- NEW: Header Navigation Icons --- */
+        .header-links {
+            position: absolute;
+            top: 0px; /* Adjust top position relative to the container */
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-between;
+            padding: 10px 0; /* Padding inside the container for spacing */
+            z-index: 10;
+        }
+
+        .nav-icon {
+            display: block;
+            color: var(--primary-color);
+            transition: color 0.2s ease, transform 0.2s ease;
+            padding: 10px; /* Make the click area larger */
+        }
+
+        .nav-icon:hover {
+            color: #0056b3; /* Darker primary color on hover */
+            transform: scale(1.05);
+        }
+
+        .nav-icon svg {
+            width: 30px; /* Size of the icon */
+            height: 30px;
+            fill: currentColor;
+            display: block;
+        }
+
+        .home-icon {
+            margin-left: -10px; /* Counteract padding to align with container edge */
+        }
+
+        .logout-icon {
+            margin-right: -10px; /* Counteract padding to align with container edge */
+        }
+        
+        /* --- Profile & Forms (Same as before) --- */
+        .profile-card { text-align: center; }
+        .avatar-placeholder {
+            width: 120px; height: 120px; border-radius: 50%;
+            background-color: #e9ecef; margin: 0 auto 16px;
+            display: flex; align-items: center; justify-content: center;
+            color: var(--secondary-color);
+        }
+        .avatar-placeholder svg { width: 60px; height: 60px; fill: currentColor; }
+        .profile-card h2 { font-size: 1.75rem; margin-bottom: 8px; }
+        .profile-card p { font-size: 1rem; color: var(--secondary-color); margin: 4px 0; }
+        .forms-section { display: flex; flex-direction: column; gap: 24px; }
+        .form-group { margin-bottom: 16px; }
+        .form-group label { display: block; font-weight: 600; margin-bottom: 6px; }
+        .form-group input {
+            width: 100%; padding: 10px 12px; font-size: 1rem;
+            border: 1px solid #ced4da; border-radius: 6px; box-sizing: border-box;
+        }
+        .form-actions { display: flex; gap: 12px; margin-top: 20px; }
+
+        /* --- Button Styles (Added btn-info) --- */
+        .btn {
+            font-size: 1rem; font-weight: 600; padding: 12px 20px;
+            border: none; border-radius: 6px; cursor: pointer;
+            text-decoration: none; display: inline-block;
+            transition: all 0.2s ease;
+        }
+        .btn:disabled { background-color: #e9ecef; color: #6c757d; cursor: not-allowed; }
+        .btn-primary { background-color: var(--primary-color); color: var(--white-color); }
+        .btn-primary:hover:not(:disabled) { background-color: #0056b3; box-shadow: 0 2px 6px rgba(0, 123, 255, 0.3); }
+        .btn-secondary { background-color: var(--secondary-color); color: var(--white-color); }
+        .btn-secondary:hover:not(:disabled) { background-color: #5a6268; }
+        .btn-danger { background-color: var(--danger-color); color: var(--white-color); }
+        .btn-danger:hover:not(:disabled) { background-color: #c82333; }
+        .btn-info { background-color: var(--info-color); color: var(--white-color); }
+        .btn-info:hover:not(:disabled) { background-color: #117a8b; }
+
+        /* --- Section 3: Order History (UPDATED) --- */
+        .order-history { grid-column: 1 / -1; margin-top: 24px; }
+        .order-card { margin-bottom: 20px; }
+        .order-header {
+            display: flex; justify-content: space-between; align-items: center;
+            flex-wrap: wrap; gap: 10px; border-bottom: 1px solid #e9ecef;
+            padding-bottom: 16px; margin-bottom: 16px;
+        }
+        .order-header h3 { margin: 0; font-size: 1.25rem; }
+        .order-header .order-date { font-size: 0.9rem; color: var(--secondary-color); }
+
+        .order-item-list { margin-bottom: 16px; }
+
+        /* NEW: Style for product image */
+        .order-item-image {
+            width: 60px;
+            height: 60px;
+            object-fit: cover;
+            border-radius: 6px;
+            border: 1px solid #e9ecef;
+        }
+
+        /* UPDATED: Grid layout to include image */
+        .order-item {
+            display: grid;
+            grid-template-columns: 60px 3fr 1fr 1fr 1fr; /* Image, Name, Price, Qty, Subtotal */
+            gap: 16px;
+            padding: 12px 0;
+            border-bottom: 1px solid #f8f9fa;
+            align-items: center;
+        }
+        .order-item:last-child { border-bottom: none; }
+
+        .order-item-header {
+            font-weight: 600;
+            color: var(--secondary-color);
+            font-size: 0.9rem;
+        }
+        /* UPDATED: Start header text at column 2 */
+        .order-item-header .product-name {
+            grid-column-start: 2;
+        }
+
+        .order-item .product-name { font-weight: 500; }
+
+        .order-footer {
+            border-top: 1px solid #e9ecef; padding-top: 16px; margin-top: 16px;
+            display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 16px; align-items: start;
+        }
+        .order-footer p { margin: 0; line-height: 1.5; }
+        .order-footer p strong { display: block; color: var(--dark-color); font-weight: 600; }
+        .order-footer .order-address { grid-column: span 2; }
+        .order-actions { text-align: right; align-self: end; display: flex; flex-direction: column; gap: 10px; }
+
+        /* Status Badges */
+        .status {
+            font-weight: 700; padding: 4px 10px; border-radius: 12px;
+            font-size: 0.85rem;
+        }
+        /* Custom mapping status to existing classes */
+        .status.in_progress, .status.processing { background-color: #fff3cd; color: #856404; }
+        .status.shipped { background-color: #d4edda; color: #155724; }
+        .status.delivered { background-color: #d1ecf1; color: #0c5460; }
+        .status.cancelled { background-color: #f8d7da; color: #721c24; }
+
+        /* --- Responsive Design (UPDATED) --- */
+        @media (max-width: 992px) {
+            .profile-grid { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            body { padding: 10px; }
+            .profile-container > h1 { font-size: 2rem; }
+            .profile-container { padding-top: 50px; } /* Ensure space on mobile */
+            .nav-icon svg { width: 25px; height: 25px; } /* Slightly smaller icons on mobile */
+
+            /* UPDATED: Responsive grid for items */
+            .order-item {
+                grid-template-columns: 60px 2fr 1fr; /* Image, Name, Subtotal */
+                gap: 5px 15px;
+            }
+            .order-item .product-price,
+            .order-item .product-quantity { display: none; }
+            .order-item-header .product-price,
+            .order-item-header .product-quantity { display: none; }
+
+            .order-item .product-subtotal::before {
+                content: attr(data-quantity) " x " attr(data-price) " = ";
+                color: var(--secondary-color);
+                font-size: 0.9em;
+            }
+        }
+        @media (max-width: 576px) {
+            .order-footer { grid-template-columns: 1fr; }
+            .order-actions { text-align: left; margin-top: 10px; }
+            .btn { width: 100%; box-sizing: border-box; text-align: center; }
+            .form-actions { flex-direction: column; }
+        }
+
+        /* Update the existing .order-actions style */
+        .order-actions {
+            align-self: end;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+
+            align-items: center;
+            justify-content: center;
+            height: 100%;
+        }
+
+        /* NEW: Button Sizing Constraint */
+        .order-actions .btn {
+            width: 200px;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
+
+        .order-address {
+            grid-column: span 2;
+        }
+        /* New style for the address container */
+        .order-address-container {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: baseline;
+        }
+
+        .order-address-container strong {
+            flex-shrink: 0;
+        
+        }   
+    </style>
+</head>
+<body>
+
+    <div class="profile-container">
+
+        <div class="header-links">
+            <a th:href="@{/home/}" class="nav-icon home-icon" title="Go to Home">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M10 20v-6h4v6h5v-8h3L12 3 2 12h3v8z"/></svg>
+            </a>
+            <a th:href="@{/user/logout}" class="nav-icon logout-icon" title="Logout">
+                <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M17 7l-1.41 1.41L18.17 11H8v2h10.17l-2.58 2.58L17 17l5-5zM5 5h7V3H5c-1.1 0-2 .9-2 2v14c0 1.1.9 2 2 2h7v-2H5z"/></svg>
+            </a>
+        </div>
+        <th:block th:if="${user}">
+            <h1 th:text="|Welcome, ${user.name}|">Welcome, Jane</h1>
+        </th:block>
+        <th:block th:unless="${user}">
+            <h1>My Profile</h1>
+            <div class="card"><p class="text-danger">Could not load user profile.</p></div>
+        </th:block>
+
+        <div class="profile-grid" th:if="${user}">
+
+            <div class="profile-card card" id="profile-display">
+                <div class="avatar-placeholder">
+                    <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                </div>
+                <h2 id="display-name" th:text="${user.name}">Jane Doe</h2>
+                <p id="display-email" th:text="${user.email}">jane.doe@example.com</p>
+                <p id="display-phone" th:text="${user.phone}">+91 (987) 123-4567</p>
+                <button class="btn btn-primary" id="edit-profile-btn" style="margin-top: 16px;">Edit Profile</button>
+            </div>
+
+            <div class="card" id="edit-profile-form" style="display: none;">
+                <h3>Edit Your Details</h3>
+                <form id="profile-form" th:action="@{/home/update}" th:object="${user}" method="post">
+                	<input type="hidden" name="_method" value="put" />
+                    <div class="form-group">
+                        <label for="name">Full Name</label>
+                        <input type="text" id="name" th:field="*{name}">
+                    </div>
+                    <div class="form-group">
+                        <label for="email">Email Address</label>
+                        <input type="email" id="email" th:field="*{email}">
+                    </div>
+                    <div class="form-group">
+                        <label for="phone">Phone Number</label>
+                        <input type="tel" id="phone" th:field="*{phone}">
+                    </div>
+                    <div class="form-actions">
+                        <button type="submit" class="btn btn-primary">Save Changes</button>
+                        <button type="button" class="btn btn-secondary" id="cancel-edit-btn">Cancel</button>
+                    </div>
+                </form>
+            </div>
+
+            <div class="forms-section">
+                <div class="card">
+                    <h3>Change Password</h3>
+                    <p style="font-size: 0.9rem; color: var(--secondary-color); margin-top: -10px; margin-bottom: 16px;">
+                        For your security, your password is never shown.
+                    </p>
+
+                    <p th:if="${msg1 != null}" 
+					   th:text="${msg1}" 
+					   style="color: green; font-size: 0.9rem; margin-bottom: 10px;">
+					</p>
+
+					<p th:if="${msg2 != null}" 
+					   th:text="${msg2}" 
+					   style="color: red; font-size: 0.9rem; margin-bottom: 10px;">
+					</p>
+
+
+                     <form th:action="@{/home/change-password}" method="post" id="changePasswordForm">
+                        <div class="form-group">
+                            <label for="current-password">Current Password</label>
+                            <input type="password" id="current-password" name="currentPassword" placeholder="••••••••" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="new-password">New Password</label>
+                            <input type="password" id="new-password" name="newPassword" placeholder="New Password" required>
+                        </div>
+
+                        <div class="form-group">
+                            <label for="confirm-password">Confirm New Password</label>
+                            <input type="password" id="confirm-password" name="confirmPassword" placeholder="Confirm New Password" required>
+                            <small id="passwordMessage" style="display:block; margin-top:5px;"></small>
+                        </div>
+
+                        <button type="submit" class="btn btn-primary" style="margin-top: 10px;">Update Password</button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div class="order-history">
+            <h2>My Orders</h2>
+
+            <div class="card" th:if="${orders == null or orders.isEmpty()}">
+                <p>You haven't placed any orders yet.</p>
+            </div>
+
+            <div class="order-card card" th:each="order : ${orders}" th:id="|order-${order.orderId}|">
+                <div class="order-header">
+                    <h3 th:text="|Order ID: #${order.orderId}|">Order ID: #ORD-98765</h3>
+                    <span th:text="${#temporals.format(order.orderDate, 'MMMM dd, yyyy')}"></span>
+                </div>
+
+
+                <div class="order-item-list">
+                    <div class="order-item order-item-header">
+                        <span class="product-name">Product</span>
+                        <span class="product-price">Price</span>
+                        <span class="product-quantity">Quantity</span>
+                        <span class="product-subtotal">Total Payment</span>
+                    </div>
+
+                    <div class="order-item">
+                        <img th:src="@{'/p_images/' + ${order.product.imgName}}"
+                            th:alt="${order.product.name}"
+                            class="order-item-image"
+                            src="https://via.placeholder.com/60" />
+
+                        <span class="product-name" th:text="${order.product.name}">Product Name</span>
+                        <span class="product-price">₹<span th:text="${order.product.price}">0</span></span>
+                        <span class="product-quantity" th:text="${order.quantity}">1</span>
+
+                        <span class="product-subtotal">
+                            ₹<span th:text="${order.price}">0</span>
+                        </span>
+                    </div>
+                </div>
+
+
+                <div class="order-footer">
+                    <div>
+                        <p>
+                            <strong>Status:
+                                <span class="status" th:classappend="${#strings.toLowerCase(#strings.replace(order.status, ' ', '_'))}">
+                                    <span th:text="${#strings.capitalize(#strings.toLowerCase(order.status))}">Processing</span>
+                                </span>
+                            </strong>
+                        </p>
+                        <p><strong>Payment:</strong> <span th:text="${order.paymentType}">Credit Card</span></p>
+                        <p><strong>Total:</strong> ₹<span th:text="${#numbers.formatDecimal(order.price, 1, 'COMMA', 2, 'POINT')}">219.98</span></p>
+
+                    </div>
+                    <p><strong>Delivery Date:</strong><i th:text="${#temporals.format(order.deliveryDate, 'MMMM dd, yyyy')}"></i></p>
+
+                    <div class="order-address-container" style="font-size: 0.95rem; line-height: 1.5; color: #333;">
+                        <strong style="display: inline-block; margin-right: 5px;">Delivery Address:</strong>
+
+                        <span class="address-details">
+                            <span th:text="${order.orderAddress.firstName + ' ' }">John Doe</span>,
+                            <span th:text="${order.orderAddress.address}">123 Tech Avenue</span>,
+                            <span th:text="${order.orderAddress.city}">Bangalore</span>,
+                            <span th:text="${order.orderAddress.state}">Karnataka</span> -
+                            <span th:text="${order.orderAddress.pincode}">560001</span>, <br>
+                            Mobile: <span th:text="${order.orderAddress.mobile}">9876543210</span>
+                        </span>
+                    </div>
+
+  <div class="order-actions d-flex flex-wrap gap-2">
+
+    <form th:action="@{/home/cancel/{id}(id=${order.id})}" method="post" style="display:inline;" class="cancel-order-form" th:data-order-id="${order.orderId}">
+    	<button type="submit"
+            th:if="${#strings.equalsIgnoreCase(order.status, 'In progress')}"
+            class="btn btn-danger btn-cancel-order">
+        	Cancel Order
+    	</button>
+	</form>
+
+
+    <button th:if="${order.status == 'Delivered'
+                    and order.deliveryDate != null
+                    and T(java.time.LocalDate).now().isBefore(order.deliveryDate.plusDays(7))}"
+            class="btn btn-info btn-return-order"
+            th:data-order-id="${order.orderId}"
+            th:data-return-by="${#temporals.format(order.deliveryDate.plusDays(7), 'MMMM dd, yyyy')}">
+        Return Item
+    </button>
+
+    <button th:if="${order.status == 'Delivered'
+                    and order.deliveryDate != null
+                    and T(java.time.LocalDate).now().isAfter(order.deliveryDate.plusDays(7))}"
+            class="btn btn-secondary" disabled>
+        Return Window Closed
+    </button>
+
+    <button th:if="${order.status == 'Product Packed'}"
+            class="btn btn-warning" disabled>
+        Product Packed
+    </button>
+
+    <button th:if="${order.status == 'SHIPPED'}"
+            class="btn btn-primary" disabled>
+        Shipped
+    </button>
+
+    <button th:if="${order.status == 'Out for Delivery'}"
+            class="btn btn-success" disabled>
+        Out for Delivery
+    </button>
+
+</div>
+  
+                </div>
+            </div>
+        </div>
+    </div>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+
+            // --- Edit Profile Toggle Logic ---
+            const profileDisplay = document.getElementById('profile-display');
+            const editProfileForm = document.getElementById('edit-profile-form');
+            const editBtn = document.getElementById('edit-profile-btn');
+            const cancelBtn = document.getElementById('cancel-edit-btn');
+
+            if (editBtn) {
+                editBtn.addEventListener('click', () => {
+                    profileDisplay.style.display = 'none';
+                    editProfileForm.style.display = 'block';
+                });
+
+                cancelBtn.addEventListener('click', () => {
+                    profileDisplay.style.display = 'block';
+                    editProfileForm.style.display = 'none';
+                });
+            }
+
+            // --- Order Action Logic (Cancel & Return) ---
+            const orderHistory = document.querySelector('.order-history');
+
+            if (orderHistory) {
+                orderHistory.addEventListener('click', function(e) {
+
+                    // --- CANCEL ORDER logic (FIXED) ---
+                    if (e.target.matches('.btn-cancel-order')) {
+                        e.preventDefault(); // Prevent immediate form submission
+
+                        const button = e.target;
+                        // Find the closest form element
+                        const form = button.closest('form.cancel-order-form');
+                        if (!form) return; // Exit if form is not found
+
+                        // Get the display order ID from the form's data attribute
+                        const orderId = form.dataset.orderId;
+
+
+                        Swal.fire({
+                            title: 'Are you sure?',
+                            text: `Do you really want to cancel Order #${orderId}?`,
+                            icon: 'warning',
+                            showCancelButton: true,
+                            confirmButtonColor: '#dc3545',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Yes, cancel it!'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // Submits the form, which will send the request to the backend API:
+                                // th:action="@{/home/cancel/{id}(id=${order.id})}" method="post"
+                                form.submit();
+
+                                // NOTE: The UI update logic (like removing the button and changing
+                                // the status) is now handled by the backend redirecting back to
+                                // this page, or you would use fetch() instead of form.submit()
+                                // if you wanted a purely client-side status update without a page reload.
+                                // Since your HTML uses form post, we stick with form.submit().
+                            }
+                        });
+                    }
+
+                    // --- RETURN ITEM logic ---
+                    if (e.target.matches('.btn-return-order')) {
+                        e.preventDefault();
+                        const button = e.target;
+                        const orderId = button.dataset.orderId;
+                        const returnByDate = button.dataset.returnBy;
+
+                        Swal.fire({
+                            title: 'Request a Return',
+                            text: `You are eligible to return this item until ${returnByDate}.`,
+                            icon: 'info',
+                            showCancelButton: true,
+                            confirmButtonColor: '#17a2b8',
+                            cancelButtonColor: '#6c757d',
+                            confirmButtonText: 'Start Return Process'
+                        }).then((result) => {
+                            if (result.isConfirmed) {
+                                // --- REAL APP: Redirect to return page or send fetch() ---
+                                // window.location.href = `/returns/start?orderId=${orderId}`;
+
+                                // --- DEMO: Simulate success ---
+                                Swal.fire(
+                                    'Return Started!',
+                                    'Please check your email for return instructions.',
+                                    'success'
+                                );
+
+                                // Update UI
+                                button.textContent = 'Return Initiated';
+                                button.disabled = true;
+                                button.classList.remove('btn-info');
+                                button.classList.add('btn-secondary');
+                            }
+                        });
+                    }
+
+                });
+            }
+        });
+    </script>
+
+
+<script>
+    const newPassword = document.getElementById('new-password');
+    const confirmPassword = document.getElementById('confirm-password');
+    const message = document.getElementById('passwordMessage');
+    const form = document.getElementById('changePasswordForm');
+
+    function checkPasswords() {
+        if (newPassword.value === '' && confirmPassword.value === '') {
+            message.textContent = '';
+            return;
+        }
+
+        if (newPassword.value === confirmPassword.value) {
+            message.textContent = '✅ Passwords match';
+            message.style.color = 'green';
+        } else {
+            message.textContent = '❌ Passwords do not match';
+            message.style.color = 'red';
+        }
+    }
+
+	newPassword.addEventListener('input', checkPasswords);
+    confirmPassword.addEventListener('input', checkPasswords);
+
+    // Prevent form submission if passwords don’t match
+    form.addEventListener('submit', function (event) {
+        if (newPassword.value !== confirmPassword.value) {
+            event.preventDefault();
+            message.textContent = '❌ Passwords do not match';
+            message.style.color = 'red';
+        }
+    });
+
+</script>
+</body>
+</html>

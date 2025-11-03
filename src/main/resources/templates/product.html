@@ -1,0 +1,304 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Product Details - MAX STORE</title>
+
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <style>
+    body {
+      background-color: #f1f3f6;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #2874f0;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #fff !important;
+    }
+    .search-form {
+      position: relative;
+      width: 500px;
+    }
+    .search-form .form-control {
+      border-radius: 8px;
+      border: none;
+      padding-right: 40px;
+    }
+    .search-form .search-btn {
+      position: absolute;
+      top: 0;
+      right: 0;
+      height: 100%;
+      width: 40px;
+      background: none;
+      border: none;
+      color: #2874f0;
+    }
+    .navbar .nav-link {
+      color: white !important;
+      margin-left: 15px;
+      font-size: 1.1rem;
+      font-weight: 500;
+      transition: color 0.2s ease-in-out;
+    }
+    .navbar .nav-link:hover {
+      color: #ff9f00 !important;
+    }
+
+    /* Product Section */
+    .product-container {
+      background: #fff;
+      border-radius: 15px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+      margin-top: 40px;
+      padding: 35px;
+    }
+
+    .product-img {
+      width: 100%;
+      height: 380px;
+      object-fit: contain;
+      background-color: #fafafa;
+      border-radius: 12px;
+      border: 1px solid #ddd;
+    }
+
+    .product-title {
+      font-weight: 700;
+      font-size: 1.9rem;
+      color: #333;
+    }
+
+    .product-desc {
+      line-height: 1.6;
+      color: #555;
+      font-size: 0.95rem;
+    }
+
+    .price {
+      color: #28a745;
+      font-weight: bold;
+      font-size: 1.7rem;
+    }
+
+    .delivery-info {
+      font-size: 1rem;
+      font-weight: 500;
+      color: #555;
+    }
+
+    .delivery-info .free {
+      color: #28a745;
+      font-weight: 600;
+    }
+
+    .delivery-info .charge {
+      color: #dc3545;
+      font-weight: 600;
+    }
+
+    .add-btn {
+      background-color: #ff9f00;
+      color: #fff;
+      font-weight: 600;
+      border-radius: 10px;
+      transition: all 0.3s;
+      border: none;
+    }
+    /* Add a style for the disabled button */
+    .add-btn:disabled {
+        background-color: #ccc; /* Grey out the background */
+        cursor: not-allowed;
+    }
+
+    .add-btn:hover:not(:disabled) { /* Apply hover effect only when not disabled */
+      background-color: #e68a00;
+      transform: scale(1.02);
+    }
+
+    .features i {
+      font-size: 1.7rem;
+    }
+
+    .alert {
+      border-radius: 12px;
+      font-weight: 500;
+    }
+
+    footer {
+      background: #172337;
+      color: white;
+      text-align: center;
+      padding: 25px 0;
+      margin-top: 50px;
+      font-size: 0.9rem;
+    }
+
+    footer a {
+      color: #fff;
+      text-decoration: none;
+    }
+    footer a:hover {
+      text-decoration: underline;
+    }
+	.badge {
+  		transition: transform 0.3s ease;
+	}
+	.badge.updated {
+  		transform: scale(1.3);
+	}
+	
+	li.nav-item {
+  		list-style: none;
+	}
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark px-4 shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" th:href="@{/home/}">MAX STORE</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <form class="d-flex mx-auto search-form" th:action="@{/home/search}" method="get">
+          <input class="form-control" type="search" name="query" placeholder="Search for products, brands and more">
+          <button class="search-btn" type="submit"><i class="bi bi-search"></i></button>
+        </form>
+<div class="ms-auto d-flex align-items-center">
+  <span class="text-white me-3 fw-semibold" th:text="|Hi, ${user.name}|">Hi, </span>
+  <ul class="navbar-nav d-flex flex-row align-items-center mb-0">
+    <li class="nav-item">
+      <a class="nav-link" th:href="@{/home/profile}"><i class="bi bi-person-circle"></i> Profile</a>
+    </li>
+    <li class="nav-item position-relative">
+      <a class="nav-link d-flex align-items-center" th:href="@{/cart/}">
+        <i class="bi bi-cart3 fs-5"></i>
+        <span class="ms-1">Cart</span>
+        <span th:text="${cartCount}"
+              class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
+              style="font-size: 0.7rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+          0
+        </span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a class="nav-link" th:href="@{/user/logout}">
+        <i class="bi bi-box-arrow-right"></i> Logout
+      </a>
+    </li>
+  </ul>
+</div>
+
+      </div>
+    </div>
+  </nav>
+
+  <div class="container product-container">
+   
+    <div th:if="${succMsg}" class="alert alert-success text-center">
+	  <span th:text="${succMsg}"></span>
+	</div>
+
+	<div th:if="${errorMsg}" class="alert alert-danger text-center">
+	  <span th:text="${errorMsg}"></span>
+	</div>
+
+
+    <div class="row align-items-center">
+      <div class="col-md-5 text-center">
+        <img th:src="@{'/p_images/' + ${product.imgName}}" th:alt="${product.name}" class="product-img">
+      </div>
+
+      <div class="col-md-7">
+        <h2 class="product-title" th:text="${product.name}">Product Name</h2>
+
+        <p class="mt-3 mb-2"><strong>Description:</strong></p>
+        <p class="product-desc" th:text="${product.description}">Product Description</p>
+
+        <p><strong>Category:</strong> <span th:text="${product.category.name}"></span></p>
+        <p><strong>Seller:</strong> <span th:text="${product.seller.name}"></span></p>
+        
+        <p>
+            <strong>Status:</strong> 
+            <span th:if="${product.available}" class="text-success fw-bold">In Stock</span>
+            <span th:unless="${product.available}" class="text-danger fw-bold">Out of Stock</span>
+        </p>
+
+        <hr>
+
+        <p class="price mb-1">₹ <span id="productPrice" th:text="${product.price}"></span></p>
+        <p id="deliveryCharge" class="delivery-info mt-2"></p>
+
+        <p class="text-muted"><small>Inclusive of all taxes</small></p>
+
+        <div class="row text-center features mt-4">
+          <div class="col-md-4">
+            <i class="bi bi-cash-coin text-success"></i>
+            <p class="small mt-1">Cash On Delivery</p>
+          </div>
+          <div class="col-md-4">
+            <i class="bi bi-arrow-repeat text-danger"></i>
+            <p class="small mt-1">7 Days Return</p>
+          </div>
+          <div class="col-md-4">
+            <i class="bi bi-truck text-primary"></i>
+            <p class="small mt-1">Free Shipping</p>
+          </div>
+        </div>
+
+        <form th:action="@{/cart/add/{id}(id=${product.id})}" method="post" class="mt-4">
+            <button type="submit" class="btn add-btn btn-lg w-100" th:disabled="${!product.available}">
+              <i class="bi bi-cart-plus"></i> 
+              <span th:text="${product.available} ? 'Add to Cart' : 'Out of Stock'">Add to Cart</span>
+            </button>
+        </form>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    <p class="mb-0">© 2025 MAX STORE | Designed by Naidu</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function() {
+      const priceElement = document.getElementById("productPrice");
+      const deliveryInfo = document.getElementById("deliveryCharge");
+
+      if (priceElement && deliveryInfo) {
+        const price = parseFloat(priceElement.textContent.trim());
+
+        if (!isNaN(price)) {
+          if (price < 499) {
+            deliveryInfo.innerHTML = `<span class="charge">Delivery Charges: ₹80</span>`;
+          } else {
+            deliveryInfo.innerHTML = `<span class="free">Free Delivery</span>`;
+          }
+        }
+      }
+    });
+    
+    
+    function animateCartBadge() {
+      const badge = document.querySelector('.badge');
+      badge.classList.add('updated');
+      setTimeout(() => badge.classList.remove('updated'), 300);
+    }
+    
+  </script>
+
+</body>
+</html>

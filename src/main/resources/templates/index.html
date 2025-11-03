@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MAX STORE - Home</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
+  <style>
+    body {
+      background-color: #f1f3f6;
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    }
+    .navbar {
+      background-color: #2874f0;
+    }
+    .navbar .nav-link, .navbar-brand {
+      color: white !important;
+      font-weight: 500;
+    }
+    .navbar .form-control {
+      width: 400px;
+    }
+    .navbar .btn {
+      color: white !important;
+      border-color: white;
+    }
+    .navbar .btn:hover {
+      background: white;
+      color: #2874f0 !important;
+    }
+    .carousel-inner img {
+      width: 100%;
+      height: 400px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+    .category-card {
+      text-align: center;
+      background: white;
+      padding: 15px;
+      border-radius: 10px;
+      transition: all 0.3s ease-in-out;
+      cursor: pointer; /* Add cursor pointer to show it's clickable */
+    }
+    .category-card:hover {
+      transform: translateY(-6px);
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .category-card img {
+      width: 80px;
+      height: 80px;
+      object-fit: contain;
+      margin-bottom: 10px;
+    }
+    .product-card {
+      transition: all 0.3s ease;
+      border-radius: 10px;
+      background: white;
+      cursor: pointer; /* Add cursor pointer to show it's clickable */
+    }
+    .product-card:hover {
+      transform: scale(1.05);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.15);
+    }
+    .product-card img {
+      height: 220px;
+      object-fit: contain;
+      padding: 10px;
+    }
+    .card-body h6 {
+      font-weight: 600;
+    }
+    /* STYLISH ALERT CSS */
+    .custom-alert {
+      position: fixed;
+      top: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      padding: 15px 25px;
+      background-color: #2874f0;
+      color: white;
+      border-radius: 8px;
+      box-shadow: 0 4px 15px rgba(0,0,0,0.2);
+      z-index: 1050;
+      opacity: 0;
+      visibility: hidden;
+      transition: opacity 0.3s ease, visibility 0.3s ease;
+      font-weight: 500;
+    }
+    .custom-alert.show {
+      opacity: 1;
+      visibility: visible;
+    }
+    footer {
+      background: #172337;
+      color: white;
+      padding: 25px 0;
+      text-align: center;
+      margin-top: 40px;
+      border-top: 3px solid #2874f0;
+    }
+  </style>
+</head>
+<body>
+
+  <nav class="navbar navbar-expand-lg navbar-dark px-4 shadow-sm">
+    <a class="navbar-brand fw-bold fs-4" href="/">MAX STORE</a>
+    <form class="d-flex mx-3">
+      <input class="form-control" type="search" placeholder="Search for products, brands and more">
+      <button class="nav-link px-3 cart-alert"  type="submit"><i class="btn btn-outline-light ms-2">Search</i></button>
+    </form>
+    <div class="ms-auto d-flex align-items-center">
+      <a class="nav-link px-3" href="/user/login"><i class="bi bi-person-circle fs-5"></i></a>
+      <a class="nav-link px-3 cart-alert" href="#"><i class="bi bi-cart3 fs-5"></i></a>
+      <a class="nav-link px-3 fw-semibold" href="/seller/login">Become a Seller</a>
+    </div>
+  </nav>
+
+  <div id="bannerCarousel" class="carousel slide mt-3 container" data-bs-ride="carousel" data-bs-interval="2500">
+    <div class="carousel-inner rounded-3">
+      <div class="carousel-item active">
+        <img src="https://images.pexels.com/photos/3769747/pexels-photo-3769747.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Sale Banner">
+      </div>
+      <div class="carousel-item">
+        <img src="https://images.pexels.com/photos/5632371/pexels-photo-5632371.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="New Arrivals">
+      </div>
+      <div class="carousel-item">
+        <img src="https://images.pexels.com/photos/777001/pexels-photo-777001.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Electronics Deals">
+      </div>
+      <div class="carousel-item">
+        <img src="https://images.pexels.com/photos/326503/pexels-photo-326503.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Online Shopping">
+      </div>
+      <div class="carousel-item">
+        <img src="https://images.pexels.com/photos/1229861/pexels-photo-1229861.jpeg?auto=compress&cs=tinysrgb&w=1260&h=750&dpr=1" alt="Modern Workspace">
+      </div>
+    </div>
+  </div>
+
+  <div class="container my-5">
+    <h4 class="mb-3 fw-semibold">Top Categories</h4>
+    <div class="row g-4 text-center">
+      <div class="col-6 col-md-2">
+        <div class="category-card login-required">
+          <img src="https://images.pexels.com/photos/1092644/pexels-photo-1092644.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Mobiles">
+          <p>Mobiles</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="category-card login-required">
+          <img src="https://images.pexels.com/photos/356056/pexels-photo-356056.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Electronics">
+          <p>Electronics</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="category-card login-required">
+          <img src="https://images.pexels.com/photos/298863/pexels-photo-298863.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Fashion">
+          <p>Fashion</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="category-card login-required">
+          <img src="https://images.pexels.com/photos/6489083/pexels-photo-6489083.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Appliances">
+          <p>Appliances</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="category-card login-required">
+          <img src="https://images.pexels.com/photos/2228580/pexels-photo-2228580.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Books">
+          <p>Books</p>
+        </div>
+      </div>
+      <div class="col-6 col-md-2">
+        <div class="category-card login-required">
+          <img src="https://images.pexels.com/photos/46798/the-ball-stadion-football-the-pitch-46798.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Sports">
+          <p>Sports</p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="container my-5">
+    <h4 class="mb-3 fw-semibold">Best of Electronics</h4>
+    <div class="row g-4">
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.unsplash.com/photo-1511707171634-5f897ff02aa9?auto=format&fit=crop&w=600&q=80" alt="Latest Smartphone"/>
+          <div class="card-body text-center">
+            <h6>Latest Smartphone</h6>
+            <p class="text-success fw-semibold">₹14,999</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.unsplash.com/photo-1517336714731-489689fd1ca8?auto=format&fit=crop&w=600&q=80" alt="Gaming Laptop"/>
+          <div class="card-body text-center">
+            <h6>Gaming Laptop</h6>
+            <p class="text-success fw-semibold">₹45,999</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/3945667/pexels-photo-3945667.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Headphones">
+          <div class="card-body text-center">
+            <h6>Headphones</h6>
+            <p class="text-success fw-semibold">₹1,499</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/90946/pexels-photo-90946.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Camera">
+          <div class="card-body text-center">
+            <h6>Camera</h6>
+            <p class="text-success fw-semibold">₹29,999</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/2783873/pexels-photo-2783873.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Smartwatch">
+          <div class="card-body text-center">
+            <h6>Smartwatch</h6>
+            <p class="text-success fw-semibold">₹4,499</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/4012966/pexels-photo-4012966.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Tablet">
+          <div class="card-body text-center">
+            <h6>Tablet</h6>
+            <p class="text-success fw-semibold">₹19,999</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.unsplash.com/photo-1506744038136-46273834b3fb?auto=format&fit=crop&w=600&q=80" alt="4K Smart TV"/>
+          <div class="card-body text-center">
+            <h6>4K Smart TV</h6>
+            <p class="text-success fw-semibold">₹32,999</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/2754665/pexels-photo-2754665.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Refrigerator">
+          <div class="card-body text-center">
+            <h6>Refrigerator</h6>
+            <p class="text-success fw-semibold">₹24,499</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/6207818/pexels-photo-6207818.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Washing Machine">
+          <div class="card-body text-center">
+            <h6>Washing Machine</h6>
+            <p class="text-success fw-semibold">₹18,999</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/4792487/pexels-photo-4792487.jpeg?auto=compress&cs=tinysrgb&w=600" alt="AC">
+          <div class="card-body text-center">
+            <h6>Air Conditioner</h6>
+            <p class="text-success fw-semibold">₹36,499</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/5591663/pexels-photo-5591663.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Microwave">
+          <div class="card-body text-center">
+            <h6>Microwave Oven</h6>
+            <p class="text-success fw-semibold">₹9,999</p>
+          </div>
+        </div>
+      </div>
+      <div class="col-6 col-md-3">
+        <div class="card product-card login-required">
+          <img src="https://images.pexels.com/photos/164879/pexels-photo-164879.jpeg?auto=compress&cs=tinysrgb&w=600" alt="Speaker">
+          <div class="card-body text-center">
+            <h6>Bluetooth Speaker</h6>
+            <p class="text-success fw-semibold">₹2,299</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div id="loginAlert" class="custom-alert">Please login and use!..</div>
+
+  <footer>
+    <p class="mb-0">© 2025 MAX STORE | Designed by Naidu</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+<script>
+  document.addEventListener('DOMContentLoaded', function() {
+    // Get all elements that should trigger the alert
+    const loginRequiredElements = document.querySelectorAll('.login-required, .cart-alert');
+    
+    // Get the alert element itself
+    const loginAlert = document.getElementById('loginAlert');
+    let alertTimeout; // This will hold the timer
+
+    // Add a click listener to each element
+    loginRequiredElements.forEach(function(element) {
+      element.addEventListener('click', function(event) {
+        event.preventDefault(); // Stop any default link behavior
+        
+        // Cancel any previous alert hide timer
+        clearTimeout(alertTimeout);
+        
+        // Show the custom alert
+        loginAlert.classList.add('show');
+        
+        // Hide after 2.5 seconds
+        alertTimeout = setTimeout(function() {
+          loginAlert.classList.remove('show');
+        }, 2500);
+      });
+    });
+  });
+</script>
+  
+</body>
+</html>

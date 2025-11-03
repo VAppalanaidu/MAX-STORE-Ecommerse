@@ -1,0 +1,200 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Order Successful - MAX STORE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f7f9fb;
+      font-family: 'Poppins', sans-serif;
+    }
+
+    /* Navbar */
+    .navbar {
+      background-color: #2874f0;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #fff !important;
+    }
+    .navbar .nav-link {
+      color: white !important;
+      margin-left: 15px;
+      font-weight: 500;
+    }
+    .navbar .nav-link:hover {
+      color: #ff9f00 !important;
+    }
+
+    /* Success Section */
+    .success-container {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      min-height: 80vh;
+      padding: 40px 0;
+    }
+    .success-card {
+      background: #fff;
+      border-radius: 20px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.1);
+      padding: 50px 60px;
+      text-align: center;
+      max-width: 600px;
+      width: 100%;
+    }
+
+    /* ✅ Animated Green Tick */
+    .checkmark {
+      width: 80px;
+      height: 80px;
+      border-radius: 50%;
+      display: block;
+      stroke-width: 3;
+      stroke: #28a745;
+      stroke-miterlimit: 10;
+      box-shadow: 0 0 0 4px rgba(40, 167, 69, 0.1);
+      margin: 20px auto;
+      animation: scaleIn 0.3s ease-in-out 0.9s both;
+    }
+
+    .checkmark__circle {
+      stroke-dasharray: 166;
+      stroke-dashoffset: 166;
+      stroke-width: 3;
+      stroke-miterlimit: 10;
+      stroke: #28a745;
+      fill: none;
+      animation: stroke 0.6s cubic-bezier(0.65, 0, 0.45, 1) forwards;
+    }
+
+    .checkmark__check {
+      transform-origin: 50% 50%;
+      stroke-dasharray: 48;
+      stroke-dashoffset: 48;
+      animation: stroke 0.4s cubic-bezier(0.65, 0, 0.45, 1) 0.6s forwards;
+    }
+
+    @keyframes stroke {
+      100% {
+        stroke-dashoffset: 0;
+      }
+    }
+
+    @keyframes scaleIn {
+      0%, 100% {
+        transform: none;
+      }
+      50% {
+        transform: scale3d(1.1, 1.1, 1);
+      }
+    }
+
+    .success-title {
+      font-size: 1.8rem;
+      font-weight: 700;
+      color: #333;
+    }
+    .success-msg {
+      color: #666;
+      margin: 15px 0;
+    }
+    .order-info {
+      background-color: #f1f8ff;
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      font-size: 0.95rem;
+    }
+    .btn-home {
+      background-color: #007bff;
+      color: white;
+      border-radius: 8px;
+      padding: 10px 25px;
+      font-weight: 600;
+      text-decoration: none;
+      display: inline-block;
+      margin-top: 25px;
+      transition: 0.3s;
+    }
+    .btn-home:hover {
+      background-color: #0056b3;
+      text-decoration: none;
+      color: white;
+    }
+
+    /* Footer */
+    footer {
+      background: #172337;
+      color: white;
+      text-align: center;
+      padding: 25px 0;
+      margin-top: 50px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark px-4 shadow-sm">
+    <div class="container-fluid">
+      <a class="navbar-brand" th:href="@{/home/}">MAX STORE</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <div class="ms-auto d-flex align-items-center">
+          <span class="text-white me-3 fw-semibold" th:text="|Hi, ${user.name}|">Hi, User</span>
+          <ul class="navbar-nav d-flex flex-row align-items-center mb-0">
+            
+            
+            <li class="nav-item">
+              <a class="nav-link" th:href="@{/user/logout}">
+                <i class="bi bi-box-arrow-right"></i> Logout
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Success Message -->
+  <div class="success-container">
+    <div class="success-card">
+      <!-- Animated Checkmark SVG -->
+      <svg class="checkmark" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 52 52">
+        <circle class="checkmark__circle" cx="26" cy="26" r="25" fill="none"/>
+        <path class="checkmark__check" fill="none" stroke="#28a745" stroke-width="4" d="M14 27l7 7 16-16"/>
+      </svg>
+
+      <div class="success-title">Order Placed Successfully!</div>
+      <p class="success-msg">
+        Thank you, <span th:text="${user.name}">Customer</span>! Your order has been placed successfully.
+      </p>
+
+      <div class="order-info">
+        <p><strong>Order ID:</strong> <span th:text="${orderId}">ORD12345</span></p>
+        <p><strong>Total Amount:</strong> ₹<span th:text="${totalAmount}">999</span></p>
+        <p><strong>Estimated Delivery:</strong> 3–5 business days</p>
+      </div>
+
+      <a th:href="@{/home/}" class="btn-home">
+        <i class="bi bi-house-door"></i> Back to Home
+      </a>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    <p class="mb-0">© 2025 MAX STORE | Designed by Naidu</p>
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

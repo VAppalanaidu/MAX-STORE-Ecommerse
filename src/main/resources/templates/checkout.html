@@ -1,0 +1,281 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:th="http://www.thymeleaf.org">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Checkout - MAX STORE</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f7f9fb;
+    }
+    .checkout-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 30px;
+      margin-top: 30px;
+    }
+    .form-label {
+      font-weight: 600;
+    }
+    .btn-checkout {
+      background-color: #007bff;
+      color: white;
+      font-weight: 600;
+      border-radius: 8px;
+      transition: 0.3s;
+    }
+    .btn-checkout:hover {
+      background-color: #0056b3;
+    }
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: #333;
+      margin-bottom: 15px;
+    }
+    .price-card {
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+      padding: 25px;
+      margin-top: 30px;
+      max-width: 100%;
+    }
+    .price-title {
+      font-weight: 700;
+      font-size: 1.2rem;
+      margin-bottom: 20px;
+    }
+    .price-item {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+      font-size: 0.95rem;
+    }
+    .total-amount {
+      font-weight: 700;
+      font-size: 1.1rem;
+      border-top: 1px solid #ddd;
+      padding-top: 10px;
+    }
+    .save-text {
+      color: green;
+      font-weight: 600;
+      font-size: 0.9rem;
+      margin-top: 5px;
+    }
+    .navbar {
+      background-color: #2874f0;
+    }
+    .navbar-brand {
+      font-weight: 700;
+      font-size: 1.6rem;
+      color: #fff !important;
+    }
+    .navbar .nav-link {
+      color: white !important;
+      margin-left: 15px;
+      font-weight: 500;
+    }
+    .navbar .nav-link:hover {
+      color: #ff9f00 !important;
+    }
+    footer {
+      background: #172337;
+      color: white;
+      text-align: center;
+      padding: 25px 0;
+      margin-top: 50px;
+      font-size: 0.9rem;
+    }
+  </style>
+</head>
+<body>
+
+<!-- Navbar -->
+  <nav class="navbar navbar-expand-lg navbar-dark px-4 shadow-sm">
+    <div class="container-fluid">
+        <a class="navbar-brand" th:href="@{/home/}" >MAX STORE</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+            <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+           <div class="ms-auto d-flex align-items-center">
+  				<span class="text-white me-3 fw-semibold" th:text="|Hi, ${user.name}|">Hi, </span>
+  				<ul class="navbar-nav d-flex flex-row align-items-center mb-0">
+    			<li class="nav-item">
+      				<a class="nav-link" href="#"><i class="bi bi-person-circle"></i> Profile</a>
+    			</li>
+    			<li class="nav-item position-relative">
+      				<a class="nav-link d-flex align-items-center" th:href="@{/cart/}">
+        			<i class="bi bi-cart3 fs-5"></i>
+        			<span class="ms-1">Cart</span>
+        			<span th:text="${cartCount}"
+              			class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger shadow-sm"
+              			style="font-size: 0.7rem; min-width: 18px; height: 18px; display: flex; align-items: center; justify-content: center;">
+          				0
+        			</span>
+      				</a>
+    			</li>
+    			<li class="nav-item">
+      				<a class="nav-link" th:href="@{/user/logout}">
+        			<i class="bi bi-box-arrow-right"></i> Logout
+      				</a>
+    			</li>
+  			</ul>
+		</div>        
+        </div>
+    </div>
+  </nav>
+
+<div class="container">
+  <div class="row justify-content-center">
+    
+    <!-- Left Column - Address Form -->
+    <div class="col-lg-8">
+      <div class="checkout-card">
+        <h3 class="text-center mb-4">Checkout Form</h3>
+        
+        <form th:action="@{/order/placeOrder}" th:object="${orderRequest}" method="post">
+          <div class="section-title">Personal Information</div>
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">First Name</label>
+              <input type="text" th:field="*{firstName}" class="form-control" placeholder="Enter your first name" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Last Name</label>
+              <input type="text" th:field="*{lastName}" class="form-control" placeholder="Enter your last name" required>
+            </div>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-6">
+              <label class="form-label">Email</label>
+              <input type="email" th:field="*{email}" class="form-control" placeholder="example@gmail.com" required>
+            </div>
+            <div class="col-md-6">
+              <label class="form-label">Mobile</label>
+              <input type="tel" th:field="*{mobile}" class="form-control" placeholder="Enter mobile number" required>
+            </div>
+          </div>
+
+          <div class="section-title">Address Details</div>
+          <div class="mb-3">
+            <label class="form-label">Address</label>
+            <textarea th:field="*{address}" class="form-control" rows="3" placeholder="Flat, Street, Landmark..." required></textarea>
+          </div>
+
+          <div class="row mb-3">
+            <div class="col-md-4">
+              <label class="form-label">City</label>
+              <input type="text" th:field="*{city}" class="form-control" required>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">State</label>
+              <select th:field="*{state}" class="form-select" required>
+                <option value="">-- Select State --</option>
+                <!-- states list here -->
+
+                <option value="Andhra Pradesh">Andhra Pradesh</option>
+                            <option value="Arunachal Pradesh">Arunachal Pradesh</option>
+                            <option value="Assam">Assam</option>
+                            <option value="Bihar">Bihar</option>
+                            <option value="Chhattisgarh">Chhattisgarh</option>
+                            <option value="Goa">Goa</option>
+                            <option value="Gujarat">Gujarat</option>
+                            <option value="Haryana">Haryana</option>
+                            <option value="Himachal Pradesh">Himachal Pradesh</option>
+                            <option value="Jharkhand">Jharkhand</option>
+                            <option value="Karnataka">Karnataka</option>
+                            <option value="Kerala">Kerala</option>
+                            <option value="Madhya Pradesh">Madhya Pradesh</option>
+                            <option value="Maharashtra">Maharashtra</option>
+                            <option value="Manipur">Manipur</option>
+                            <option value="Meghalaya">Meghalaya</option>
+                            <option value="Mizoram">Mizoram</option>
+                            <option value="Nagaland">Nagaland</option>
+                            <option value="Odisha">Odisha</option>
+                            <option value="Punjab">Punjab</option>
+                            <option value="Rajasthan">Rajasthan</option>
+                            <option value="Sikkim">Sikkim</option>
+                            <option value="Tamil Nadu">Tamil Nadu</option>
+                            <option value="Telangana">Telangana</option>
+                            <option value="Tripura">Tripura</option>
+                            <option value="Uttar Pradesh">Uttar Pradesh</option>
+                            <option value="Uttarakhand">Uttarakhand</option>
+                            <option value="West Bengal">West Bengal</option>
+                            <option value="Chandigarh">Chandigarh</option>
+                            <option value="Delhi">Delhi</option>
+                            <option value="Jammu and Kashmir">Jammu and Kashmir</option>
+
+              </select>
+            </div>
+            <div class="col-md-4">
+              <label class="form-label">Pincode</label>
+              <input type="number" th:field="*{pincode}" class="form-control" required>
+            </div>
+          </div>
+
+          <div class="section-title">Payment Method</div>
+          <select th:field="*{paymentType}" class="form-select mb-4" required>
+             <option value="">-- Select Payment Type --</option>
+             <option value="Cash on Delivery">Cash on Delivery</option>
+             <option value="UPI">UPI</option>
+             <option value="Credit/Debit Card">Credit/Debit Card</option>
+             <option value="Net Banking">Net Banking</option>
+          </select>
+
+			<input type="hidden" th:field="*{price}" id="priceField" th:value="${totalPrice}">
+			
+          <div class="text-center">
+            <button type="submit" class="btn btn-checkout px-5 py-2">Place Order</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Right Column - Price Details -->
+    <div class="col-lg-4">
+      <div class="price-card">
+        <div class="price-title">PRICE DETAILS</div>
+        <div class="price-item">
+          <span>
+  			Price (
+  				<span th:text="${cartCount}"></span>
+  				<span th:text="${cartCount == 1 ? 'item' : 'items'}"></span>
+ 				 )
+			</span>
+          
+          <span>₹<span id="totalPrice" th:text="${totalPrice}">789</span></span>
+        </div>
+        <div class="price-item">
+          <span>Discount</span>
+          <span class="text-success">– ₹<span id="discount" th:text="${discount}">100</span></span>
+        </div>
+        <div class="price-item">
+          <span>Delivery Charges</span>
+          <span id="deliveryValue" class="text-success" th:text="${deliveryFee}">Free</span>
+        </div>
+        <div class="price-item total-amount">
+          <span>Total Amount</span>
+          <span>₹<span id="finalAmount" th:field="*{price}" th:text="${finalAmount}">0</span></span>
+        </div>
+        <p class="save-text">You will save ₹<span th:text="${discount}">100</span> on this order</p>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<footer>
+  <p class="mb-0">© 2025 MAX STORE | Designed by Naidu</p>
+</footer>
+
+
+
+
+</body>
+</html>
